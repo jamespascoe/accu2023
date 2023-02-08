@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Advanced C++20 Coroutines</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
+
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/league.css" id="theme">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/github.css" id="highlight-theme">
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+
+        <!--
+        <section id="Title-Slide"
+                 data-state="hideControls"
+                 data-menu-title="Title Slide"
+                 data-background-image="media/title-slide.png"
+                 data-background-size="contain">
+        </section>
+        -->
+
+        <section data-menu-title="Advanced C++20 Coroutines">
+          <h2>Advanced C++20 Coroutines</h2>
+          <p>
+            <small>
+              Jim (James) Pascoe<br>
+              <a href="http://www.james-pascoe.com">http://www.james-pascoe.com</a><br>
+              <a href="mailto:james@james-pascoe.com">james@james-pascoe.com</a><p>
+
+              <a href="http://jamespascoe.github.io/accu2023">http://jamespascoe.github.io/accu2023</a><br>
+              <a href="https://github.com/jamespascoe/accu2023-example-code.git">https://github.com/jamespascoe/accu2023-example-code.git</a>
+            </small>
+        </section>
+
+        <section>
+          <h2>Overview</h2>
+          <span class="fragment" style="color:yellow">Demystify Using C++20 Coroutines for Networking</span><br>
+          <span class="fragment" style="color:yellow">Emphasis on practical examples and code</span>
+          <p>
+          <ul>
+            <span class="fragment"><li>Coroutines: fundamentals, benefits and usage</li></span>
+            <span class="fragment">
+              <ul>
+                <li><a href="https://www.lua.org/versions.html#5.4">Lua 5.4.4</a><span class="fragment"> and <a href="https://en.cppreference.com/w/cpp/language/coroutines">C++20</a></span></li>
+              </ul>
+            </span>
+            <span class="fragment"><li>How to Write Networking Code Using Coroutines</li></span>
+            <ul>
+              <span class="fragment"><li><a href="https://github.com/jamespascoe/CoChat.git">CoChat</a>: a coroutine based chat program</li></span>
+              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_78_0/doc/html/boost_asio/overview/core/cpp20_coroutines.html">Boost Asio (1.78)</a></li></span>
+            </ul>
+            <span class="fragment"><li>C++23/26: the future of Coroutines</li></span>
+          </ul>
+        </section>
+
+        <section>
+          <h2><a href="https://github.com/jamespascoe/accu2022-example-code.git">Example Code: Tools & Build</a></h2>
+            <ul>
+              <span class="fragment"><li>C++ examples all compile with <a href="https://gcc.gnu.org/gcc-11/changes.html">GCC 11.2</a>:</li></span>
+              <span class="fragment"><ul><li><a href="https://www.boost.org/doc/libs/1_78_0/doc/html/boost_asio.html">Boost Asio 1.78.0</a> (also works with 1.76.0)</li></ul></span>
+              <span class="fragment"><li>Lua examples run with <a href="https://www.lua.org/download.html">Lua 5.4.4</a>:</li></span>
+              <span class="fragment"><ul><li>Requires <code>luaposix</code> and <code>luasocket</code></li></ul></span>
+              <span class="fragment"><ul><li><code>sudo luarocks install luaposix</code></li></ul></span>
+              <span class="fragment"><ul><li><code>sudo luarocks install luasocket</code></li></ul></span>
+              <span class="fragment"><li>Tested on Linux Mint 19 and Mac OS X (<font size="6">Mojave</font>, <font size="6">Big Sur</font>)</li></span>
+            </ul>
+        </section>
+
+      <section>
+        <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
+          <h1>Fundamentals</h1>
+        </section>
+
+      </section>
+      <section>
+
+        <section>
+          <h2>Questions?</h2>
+          <p><p>
+          <a href="http://www.james-pascoe.com">http://www.james-pascoe.com</a><br>
+          <a href="mailto:james@james-pascoe.com">james@james-pascoe.com</a><p>
+
+          <a href="http://jamespascoe.github.io/accu2023">http://jamespascoe.github.io/accu2023</a><br>
+          <a href="https://github.com/jamespascoe/accu2023-example-code.git"><font size="6">https://github.com/jamespascoe/accu2023-example-code.git</font></a>
+        </section>
+
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/menu/menu.js"></script>
+    <script src="plugin/chart/Chart.min.js"></script>
+    <script src="plugin/chart/plugin.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+        controls: true,
+        totalTime: 5400,
+        hideInactiveCursor: true,
+        hideCursorTime: 2000,
+        hideAddressBar: true,
+        preloadIframes: true,
+        progress: false,
+        touch: true,
+        keyboard: {
+          67: () => { /* Keycode for the letter 'c' i.e. 'controls' */
+            var currentSlide = Reveal.getCurrentSlide();
+            var currentVideo = currentSlide.getElementsByTagName('video')[0];
+            if (currentVideo) {
+              /* Toggle video controls on/off */
+              currentVideo.controls = !currentVideo.controls
+            }
+          },
+          32: () => { /* Keycode for spacebar */
+            var currentSlide = Reveal.getCurrentSlide();
+            var currentVideo = currentSlide.getElementsByTagName('video')[0];
+            if (currentVideo) {
+              /* Pause/resume video when the spacebar is pressed */
+              if (currentVideo.paused == true) currentVideo.play();
+              else currentVideo.pause();
+            }
+            else {
+              /* Advance to next slide if no video (default Reveal behaviour) */
+              Reveal.next();
+            }
+          }
+        },
+        chart: {
+          defaults: {
+            global: {
+              title: { fontColor: "#FFF" },
+              legend: {
+                position: "bottom",
+                labels: { fontColor: "#FFF" },
+              },
+              tooltips: {
+                labels: { fontColor: "#FFF" },
+              },
+            },
+            scale: {
+              scaleLabel: { fontColor: "#FFF" },
+              gridLines: { color: "#FFF", zeroLineColor: "#FFF" },
+              ticks: { fontColor: "#FFF" },
+            }
+          },
+          bar: { backgroundColor: [ "rgba(20,220,220,.8)" , "rgba(220,120,120,.8)", "rgba(20,120,220,.8)", "rgba(255, 159, 64, .8)","rgba(255, 205, 86, .8)", "rgba(153, 102, 255, .8)" ]},
+        },
+        menu: {
+          themes: true,
+          delayInit: true
+        },
+        pdfSeparateFragments: false,
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMenu, RevealChart ]
+      });
+
+      Reveal.addEventListener('hideControls', function() {
+        Reveal.configure({controls: false});
+      }, false );
+
+      Reveal.addEventListener('slidechanged', function() {
+        /* Ensure that the Reveal controls and Menu are available on
+         * all slides other than the 'Title-Slide'.
+         */
+        slide_id = Reveal.getCurrentSlide().getAttribute("id");
+
+        if (slide_id !== "Title-Slide") {
+          config = Reveal.getConfig();
+          if (config["controls"] !== true) {
+            Reveal.configure({controls: true});
+          }
+
+          menu = Reveal.getPlugin("menu");
+          if (!menu.isMenuInitialised()) {
+            menu.initialiseMenu();
+          }
+        }
+      }, false );
+
+      Reveal.addEventListener('increasePlaybackSpeed', function() {
+        var currentSlide = Reveal.getCurrentSlide();
+        var currentVideo = currentSlide.getElementsByTagName('video')[0];
+        if (currentVideo) {
+          currentVideo.playbackRate = 2.0;
+        }
+      }, false );
+   </script>
+  </body>
+</html>
