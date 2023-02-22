@@ -42,32 +42,34 @@
             </small>
         </section>
 
+        <section data-menu-title="Poll: Coroutine Familiarity">
+          <span class="fragment"><h3 style="color:yellow">Coroutine Familiarity ...</span><span class="fragment"> 1 year on?</h3></span>
+          <p>
+            <ol>
+              <span class="fragment"><li>I have a strong grasp on coroutines</li></span>
+              <span class="fragment"><li>I understand a lot more that I did a year ago</li></span>
+              <span class="fragment"><li>I have some understanding but want to learn more</li></span>
+              <span class="fragment"><li>I am just starting to understand coroutines</li></span>
+            </ol>
+        </section>
         <section>
-          <h2>Overview</h2>
-          <span class="fragment" style="color:yellow">Demystify Using C++20 Coroutines for Networking</span><br>
-          <span class="fragment" style="color:yellow">Emphasis on practical examples and code</span>
+          <h2>Why this talk?</h2>
+          <span class="fragment" style="color:yellow">Lots of good introductory talks ... </span>
+          <span class="fragment" style="color:yellow">but, what next?</span>
           <p>
           <ul>
-            <span class="fragment"><li>Coroutines: fundamentals, benefits and usage</li></span>
-            <span class="fragment">
-              <ul>
-                <li><a href="https://www.lua.org/versions.html#5.4">Lua 5.4.4</a><span class="fragment"> and <a href="https://en.cppreference.com/w/cpp/language/coroutines">C++20</a></span></li>
-              </ul>
-            </span>
-            <span class="fragment"><li>How to Write Networking Code Using Coroutines</li></span>
-            <ul>
-              <span class="fragment"><li><a href="https://github.com/jamespascoe/CoChat.git">CoChat</a>: a coroutine based chat program</li></span>
-              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_78_0/doc/html/boost_asio/overview/core/cpp20_coroutines.html">Boost Asio (1.78)</a></li></span>
-            </ul>
-            <span class="fragment"><li>C++23/26: the future of Coroutines</li></span>
+            <span class="fragment"><li>Advice: when and how to use coroutines</li></span>
+            <span class="fragment"><li>Examples: real-world  and exemplar code</li></span>
+            <span class="fragment"><li>Insight: empirical evaluations</li></span>
+            <span class="fragment"><li>Upcoming: the future of coroutines</li></span>
           </ul>
         </section>
 
         <section>
           <h2><a href="https://github.com/jamespascoe/accu2022-example-code.git">Example Code: Tools & Build</a></h2>
             <ul>
-              <span class="fragment"><li>C++ examples all compile with <a href="https://gcc.gnu.org/gcc-11/changes.html">GCC 11.2</a>:</li></span>
-              <span class="fragment"><ul><li><a href="https://www.boost.org/doc/libs/1_78_0/doc/html/boost_asio.html">Boost Asio 1.78.0</a> (also works with 1.76.0)</li></ul></span>
+              <span class="fragment"><li>C++ examples all compile with <a href="https://gcc.gnu.org/gcc-12/changes.html">GCC 12.2</a>:</li></span>
+              <span class="fragment"><ul><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost Beast 1.81.0</a></li></ul></span>
               <span class="fragment"><li>Lua examples run with <a href="https://www.lua.org/download.html">Lua 5.4.4</a>:</li></span>
               <span class="fragment"><ul><li>Requires <code>luaposix</code> and <code>luasocket</code></li></ul></span>
               <span class="fragment"><ul><li><code>sudo luarocks install luaposix</code></li></ul></span>
