@@ -43,44 +43,43 @@
         </section>
 
         <section data-menu-title="Poll: Coroutine Familiarity">
-          <span class="fragment"><h3 style="color:yellow">Coroutine Familiarity ...</span><span class="fragment"> 1 year on?</h3></span>
+          <span class="fragment"><h3 style="color:yellow">Poll: Coroutine Familiarity ...</span><span class="fragment"> 1 year on</h3></span>
           <p>
             <ol>
-              <span class="fragment"><li>I have a strong grasp on coroutines</li></span>
-              <span class="fragment"><li>I understand a lot more that I did a year ago</li></span>
-              <span class="fragment"><li>I have some understanding but want to learn more</li></span>
-              <span class="fragment"><li>I am just starting to understand coroutines</li></span>
+              <span class="fragment"><li>I am confident using coroutines</li></span>
+              <span class="fragment"><li>I understand coroutines significantly better than I did a year ago</li></span>
+              <span class="fragment"><li>I understand somewhat more about coroutines than I did a year ago</li></span>
+              <span class="fragment"><li>I am still just starting to understand coroutines</li></span>
             </ol>
         </section>
         <section>
           <h2>Why this talk?</h2>
           <span class="fragment" style="color:yellow">Lots of good introductory talks ... </span>
-          <span class="fragment" style="color:yellow">but, what next?</span>
+          <span class="fragment" style="color:yellow">but, what else do we need?</span>
           <p>
           <ul>
             <span class="fragment"><li>Advice: when and how to use coroutines</li></span>
-            <span class="fragment"><li>Examples: real-world  and exemplar code</li></span>
+            <span class="fragment"><li>Examples: real-world and exemplar code</li></span>
             <span class="fragment"><li>Insight: empirical evaluations</li></span>
-            <span class="fragment"><li>Upcoming: the future of coroutines</li></span>
+            <span class="fragment"><li>Update: what's coming in C++23/26</li></span>
           </ul>
         </section>
-
-<!--
-
- More introduction
-
- How do coroutines fit with C++20 concurrency?
- Brief introduction to C++20 coroutines
- Real-world example of coroutines
-   - Blu Wireless trains
- Build an example application - Web Server with Boost.Beast
-   - show how to do some empirical evaluations
-   - hardware performance
- C++23/C++26: the future of coroutines
-   std::generator
-
--->
-
+        <section>
+          <h2>Outline</h2>
+          <span class="fragment" style="color:yellow">Concurrency in modern C++</span>
+          <span class="fragment" style="color:yellow">C++20 Coroutine Recap</span>
+          <span class="fragment" style="color:yellow">Mobile Wireless Networking with Coroutines</span>
+          <span class="fragment" style="color:yellow">Web Serving with Boost.Beast</span>
+          <ul>
+            <span class="fragment"><li>Syncrhonous, Callbacks, Boost.Coroutine, Awaitables</li></span>
+            <span class="fragment"><li>Benchmarking with Apache bench (ab)</li></span>
+          </ul>
+          <span class="fragment" style="color:yellow">C++23/C++26: the future of coroutines</span>
+          <ul>
+            <span class="fragment"><li>P2502: std::generator</li></span>
+            <span class="fragment"><li>Benchmarking with Apache bench (ab)</li></span>
+          </ul>
+        </section>
         <section>
           <h2><a href="https://github.com/jamespascoe/accu2022-example-code.git">Example Code: Tools & Build</a></h2>
             <ul>
