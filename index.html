@@ -96,7 +96,7 @@
 
       <section>
         <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
-          <h1>Concurrency</h1>
+          <h1>Concurrency and Coroutines</h1>
         </section>
 
 
@@ -118,16 +118,12 @@
 
         <!--
 
-        <--
 
-          Concurrency recap. 
+          Concurrency recap.
 
+          Needs to culminate in mobile mesh example.
 
-
-
-
-          Needs to culminate in train example.
-
+        -->
 
         <!--
 
@@ -137,6 +133,219 @@
             Generally improve it
 
         -->
+
+        <section data-menu-title="Blu Wireless Mobile Mesh"
+                 data-state="hideControls",
+                 data-background-video="media/BWT_MobileMesh.mp4"
+                 id="video">
+        </section>
+
+        <section>
+          <h2>Coroutines</h2>
+          <span class="fragment" style="color:yellow">Coroutines are subroutines </span>
+          <span class="fragment" style="color:yellow">with enhanced semantics</span><p>
+          <ul>
+            <span class="fragment"><li>Invoked by a caller </span>
+            <span class="fragment">(and return to a caller) ...</li></span>
+            <span class="fragment"><li>Can suspend execution</li></span>
+            <span class="fragment"><li>Can resume execution (at a later time)</li></span>
+          </ul>
+          <aside class="notes">
+          When I am thinking about coroutines, I quite like the term subroutine because a subroutine can be either a function or a coroutine.
+          So, the key benefit of a coroutine is its suspension / resumption semantics. A function is called from a caller and then returns.
+          A coroutine is initially called from a caller, but can suspend its execution (at which point control is returned to the caller) and
+          then 'later' is resumed (typically after an asynchronous event or the completion of some computation).
+          </aside>
+        </section>
+
+        <section>
+          <h2>Benefits</h2>
+          <span class="fragment" style="color:yellow">Write asynchronous code ...</span><br>
+          <span class="fragment" style="color:yellow">with the readability of synchronous code</span><p>
+          <ul>
+            <span class="fragment"><li>Useful for networking</li></span>
+            <span class="fragment"><li>Lots of blocking operations (connect, send, receive)</li></span>
+            <span class="fragment"><li>Multi-threading (send and receive threads)</li></span>
+            <span class="fragment"><li>Asynchronous operations mean callbacks</li></span>
+            <span class="fragment"><li>Control flow fragments</li></span>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Coroutines</h2>
+          <span class="fragment" style="color:yellow">Coroutines are subroutines </span>
+          <span class="fragment" style="color:yellow">with enhanced semantics</span><p>
+          <ul>
+            <span class="fragment"><li>Invoked by a caller </span>
+            <span class="fragment">(and return to a caller) ...</li></span>
+            <span class="fragment"><li>Can suspend execution</li></span>
+            <span class="fragment"><li>Can resume execution (at a later time)</li></span>
+          </ul>
+          <aside class="notes">
+          When I am thinking about coroutines, I quite like the term subroutine because a subroutine can be either a function or a coroutine.
+          So, the key benefit of a coroutine is its suspension / resumption semantics. A function is called from a caller and then returns.
+          A coroutine is initially called from a caller, but can suspend its execution (at which point control is returned to the caller) and
+          then 'later' is resumed (typically after an asynchronous event or the completion of some computation).
+          </aside>
+        </section>
+
+        <section>
+          <h2>Benefits</h2>
+          <span class="fragment" style="color:yellow">Write asynchronous code ...</span><br>
+          <span class="fragment" style="color:yellow">with the readability of synchronous code</span><p>
+          <ul>
+            <span class="fragment"><li>Useful for networking</li></span>
+            <span class="fragment"><li>Lots of blocking operations (connect, send, receive)</li></span>
+            <span class="fragment"><li>Multi-threading (send and receive threads)</li></span>
+            <span class="fragment"><li>Asynchronous operations mean callbacks</li></span>
+            <span class="fragment"><li>Control flow fragments</li></span>
+          </ul>
+        </section>
+
+        <section data-menu-title="Coroutines in C++20">
+          <h2><a href="https://en.cppreference.com/w/cpp/language/coroutines">Coroutine Support in C++20</a></h2>
+            <ul>
+              <span class="fragment"><li>Three new keywords: <a href="https://en.cppreference.com/w/cpp/language/coroutines#co_await">co_await</a>, <a href="https://en.cppreference.com/w/cpp/language/coroutines#co_yield">co_yield</a>, <a href="https://en.cppreference.com/w/cpp/language/coroutines#co_return">co_return</a></li></span>
+              <span class="fragment"><li>New types:</li></span>
+              <ul>
+                <span class="fragment"><li><a href="https://en.cppreference.com/w/cpp/coroutine/coroutine_handle"><code>coroutine_handle&ltP&gt</code></a></li></span>
+                <span class="fragment"><li><a href="https://en.cppreference.com/w/cpp/coroutine/coroutine_traits"><code>coroutine_traits&ltTs...&gt</code></a></li></span>
+              </ul>
+              <span class="fragment"><li>Trivial awaitables:</li></span>
+              <ul>
+                <span class="fragment"><li><a href="https://en.cppreference.com/w/cpp/coroutine/suspend_always"><code>std::suspend_always</code></a></li></span>
+                <span class="fragment"><li><a href="https://en.cppreference.com/w/cpp/coroutine/suspend_never"><code>std::suspend_never</code></a></li></span>
+              </ul>
+            </ul>
+          <aside class="notes">
+          What do we actually get in C++20? Three new keywords and for me, really the star-of-the-show is co_await because
+          co_await suspends execution of a coroutine and returns control to the caller. co_yield, yields a value from a coroutine and
+          then suspends. So if you think of a generator, co_yield produces a value and then suspends for the next iteration. co_return
+          goes one step further by completing execution of the coroutine (and returns a value).
+          <p>
+          coroutine_handles are pointers to coroutine state and are used to resume and destroy coroutines. coroutine state is a fairly deep concept.
+          Usually allocated on the heap (although I think there are some compilers will elide it to the caller's stack) and contains the coroutine's
+          promise, parameters, as well as its volatile state, so values of local variables, resumption point etc. Basically anything that is needed
+          to resume that coroutine at a later point. And that resumption may take place on some other thread.
+          <p>
+          coroutine_traits gives you the promise type from a coroutine's return type and its parameters. And then we have two trivial awaitables
+          called suspend_always and suspend_never and these are useful in a number of places, typically for controlling whether we want a coroutine
+          to begin lazily or eagerly.
+          </aside>
+        </section>
+
+        <section id="key-references">
+          <h2>Key References</h2>
+            <ul>
+              <span class="fragment"><li><a href="https://lewissbaker.github.io/">Lewis Baker's</a> blog posts:</li></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/09/25/coroutine-theory">Coroutine Theory</a></li></ul></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">Understanding operator co_await</a></li></ul></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Understanding the promise type</a></li></ul></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2020/05/11/understanding_symmetric_transfer">Understanding Symmetric Transfer</a></li></ul></span>
+              <span class="fragment"><li><a href="https://www.scs.stanford.edu/~dm">Dave Mazière's</a> blog post:</li></span>
+              <span class="fragment"><ul><li><a href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html">My tutorial and take on C++20 coroutines</a></li></ul></span>
+              <span class="fragment"><li><a href="https://wg21.link/n4775">Gor Nishanov:</a></li></span>
+              <span class="fragment"><ul><li><a href="https://wg21.link/n4775">C++ Extensions for Coroutines (N4775)</a></li></ul></span>
+            </ul>
+        </section>
+
+        <section>
+          <h2><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">Awaitable Type</a></h2>
+          <ul>
+            <span class="fragment"><li>Supports the <code>co_await</code> operator</li></span>
+            <span class="fragment"><li>Controls the semantics of an <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/n4775.pdf">await-expression</a></li></span>
+            <span class="fragment"><li>Informs the compiler how to obtain the <a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">awaiter</a></li></span>
+          </ul>
+
+          <span class="fragment"><pre><code class="c++" data-trim data-line-numbers="">
+co_await async_write(..., use_awaitable);
+          </span></code></pre>
+
+          <aside class="notes">
+          [after bullets 1-4]
+
+          Ok, so why the distinction? I.e. why do we have the concept of an Awaitable type and an Awaiter?
+          So, an awaitable type is a type that supports co_await. But, whether or not co_await can be applied
+          directly to a type depends on the context in which the co_await expression appears. The promise type
+          can alter the semantics of the co_await expression through an 'await_transform' method and I've got a slide
+          coming up on that shortly.
+
+          By contrast the awaiter type allows the user to specify the coroutine's behaviour at specific points in
+          the suspension and resumption process. Lets take a look at the awaiter.
+          </aside>
+        </section>
+
+        <section>
+          <h2><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">Awaiter Type</a></h2>
+          <ul>
+            <span class="fragment"><li>Defines suspend and resume behaviour</li></span>
+            <span class="fragment"><li><code><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">await_ready</a></code>: is suspend required?</li></span>
+            <span class="fragment"><li><code><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">await_suspend</a></code>: schedule resume</li></span>
+            <span class="fragment"><li><code><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">await_resume</a></code>: <code>co_await</code> return result</li></span>
+            <span class="fragment"><li>Can be the same as the <a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">awaitable type</a></li></span>
+          </ul>
+          <aside class="notes">
+          The await_ready method allows you to avoid the cost of suspending if you know that the operation is going to complete synchronously.
+          <p>
+          By contrast, the key purpose of the await_suspend method is to schedule the coroutine for resumption. In particular, once the await
+          suspend method is called, the coroutine is suspended, so you are free to pass the coroutine handle to an executor so that the coroutine
+          can be resumed later.
+          <p>
+          And then when the coroutine is resumed, the await_resume method is called to obtain the result of the operation and that is what is
+          returned in the coroutine.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Coroutine Return Type</h2>
+          <ul>
+            <span class="fragment"><li>Declares the promise type to the compiler</li></span>
+            <span class="fragment"><ul><li>Using <code>coroutine_traits</code></li></ul></span>
+            <span class="fragment"><li>E.g. '<code>task&ltT&gt</code>' or '<code>generator&ltT&gt</code>'</li></span>
+            <span class="fragment"><li><a href="https://github.com/lewissbaker/cppcoro">CppCoro</a> defines several return types</li></span>
+            <span class="fragment"><li>Referred to as a 'future' in some <a href="http://wg21.link/">WG21</a> papers</li></span>
+            <span class="fragment"><li>Not to be confused with <code>std::future</code></li></span>
+          </ul>
+        </section>
+
+        <section>
+          <h2><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Promise Type</a></h2>
+          <ul>
+            <span class="fragment"><li>Controls the coroutine's behaviour</li></span>
+            <span class="fragment"><ul><li>... example coming up</li></ul></span>
+            <span class="fragment"><li>Implements methods that are called at specific points during the execution of the coroutine</li></span>
+            <span class="fragment"><li>Conveys coroutine result (or exception)</li></span>
+            <span class="fragment"><li>Again - not to be confused with <code>std::promise</code></li></span>
+          </ul>
+        </section>
+
+        <section>
+          <h2><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Customising Co_Await</a></h2>
+          <ul>
+            <span class="fragment"><li>The <code>await_transform</code> method:</li></span>
+            <span class="fragment"><ul><li>Defined in the <code>promise_type</code></li></ul></span>
+            <span class="fragment"><ul><li>Enables types that are not awaitable</li></ul></span>
+            <span class="fragment"><ul><li>Disables <code>co_await</code> on certain types</li></ul></span>
+            <span class="fragment"><ul><li>Modify the behaviour of awaitable values</li></ul></span>
+            <span class="fragment"><li>Also possible to customise <code>co_yield</code></li></span>
+            <span class="fragment"><li>See Lewis Baker's excellent <a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Blog Post</a> for details</li></span>
+          </ul>
+        </section>
+
+        <section>
+          <h2><a href="https://en.cppreference.com/w/cpp/coroutine/coroutine_handle">Coroutine Handles</a></h2>
+          <ul>
+            <span class="fragment"><li>Handle to a coroutine frame on the heap</li></span>
+            <span class="fragment"><li>Means through which coroutines are resumed</li></span>
+            <span class="fragment"><li>Also provide access to the promise type</li></span>
+            <span class="fragment"><li>Non-owning - have to be destroyed explicitly</li></span>
+            <span class="fragment"><ul><li>Often through RAII in the coroutine return type</li></ul></span>
+          </ul>
+          <aside class="notes">
+            Bit like a C pointer
+          </aside>
+        </section>
+      </section>
 
         <!--
 
@@ -166,7 +375,6 @@
 
         -->
 
-      </section>
       <section>
 
         <section>
