@@ -52,6 +52,7 @@
               <span class="fragment"><li>I am still just starting to understand coroutines</li></span>
             </ol>
         </section>
+
         <section>
           <h2>Why this talk?</h2>
           <span class="fragment" style="color:yellow">Lots of good introductory talks ... </span>
@@ -63,7 +64,12 @@
             <span class="fragment"><li>Insight: empirical evaluations</li></span>
             <span class="fragment"><li>Update: what's coming in C++23/26</li></span>
           </ul>
+          <aside class="notes">
+          Coroutines still feel a bit ephemeral. Deeply technical, still quite difficult to know when
+          to use them. I want to address this in this talk.
+          </aside>
         </section>
+
         <section>
           <h2>Outline</h2>
           <ul>
@@ -81,6 +87,7 @@
             <span class="fragment"><li><a href="http://wg21.link/p2502">P2502:</a> std::generator</li></span>
           </ul>
         </section>
+
         <section>
           <h2><a href="https://github.com/jamespascoe/accu2023-example-code.git">Example Code: Tools & Build</a></h2>
             <ul>
@@ -118,7 +125,6 @@
 
         <!--
 
-
           Concurrency recap.
 
           Needs to culminate in mobile mesh example.
@@ -127,12 +133,32 @@
 
         <!--
 
-          Import Coroutine Section from last year
             Add new mermaid diagrams
             Add mention to HALO optimisation wg21.link/p0981r0
             Generally improve it
 
         -->
+
+      </section>
+      <section>
+
+        <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
+          <h1>Coroutines in the Real-World</h1>
+        </section>
+
+        <section>
+          <h2><a href="http://bluwireless.com/applications/defence-and-perimeter-security/">Blu Wireless:</a> Mobile Mesh</h2>
+          <ul>
+            <span class="fragment"><li>IP networking over 5G mmWave (60 GHz) modems</li></span>
+            <span class="fragment"><ul><li>802.11ad MAC + PHY (Hydra) + software</li></ul></span>
+            <span class="fragment"><li>High-bandwidth, low latency mobile Internet</li></span>
+            <span class="fragment"><ul><li>Up to 3Gbps wireless links (up to 4km)</ul></span>
+            <span class="fragment"><li>Embedded quad-core ARMv8 NPUs</li></span>
+          </ul>
+          <aside class="notes">
+
+          </aside>
+        </section>
 
         <section data-menu-title="Blu Wireless Mobile Mesh"
                  data-state="hideControls",
@@ -140,8 +166,48 @@
                  id="video">
         </section>
 
+        <section data-menu-title="Blu Wireless Devices">
+          <img class="stretch" data-src="media/5G-tactical-comms.png" style="background:none; border:none; box-shadow:none;">
+        </section>
+
+        <!--
+ 
+          Why am I showing this?
+            MCM is written in modern C++
+            We are going to write a small Mesh simulator
+
+            LUA/SWIG example:
+
+              3 coroutines:
+                - connector (responsible for maitaining a connection to the mesh)
+                  - 'scans' i.e. tries to connect (via a socket) to other nodes. Probably best to just wait some time and return a 'PCP'.
+                  - 'connects' i.e. makes the connection. Typically would authenticate/agree encryption.
+
+                - event_monitor
+                  - randomly returns 'disconnected' i.e. mesh behaviour polls event_monitor and after
+                    a random period (e.g. between 1 and 10 seconds), gets a return value which says 'disconnected'.
+                    The Mesh behaviour (at this point), sets a flag to say 'not connected' which triggers the
+                    'connector' coroutine to 'scan' (i.e. wait for a random interval and return a result) and
+                    'connect'.
+
+                - dispatcher
+                  - as before
+
+            Mesh Behaviour:
+              Implements coroutines
+
+            C++ actions:
+              Implement scan
+              Implement connect
+              Implement event_monitor (provides 'IsConnected' method, which after a period 
+
+        -->
+
+      </section>
+      <section>
+
         <section>
-          <h2>Coroutines</h2>
+          <h2>C++20 Coroutines</h2>
           <span class="fragment" style="color:yellow">Coroutines are subroutines </span>
           <span class="fragment" style="color:yellow">with enhanced semantics</span><p>
           <ul>
