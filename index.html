@@ -42,32 +42,19 @@
             </small>
         </section>
 
-        <section data-menu-title="Poll: Coroutine Familiarity">
-          <span class="fragment"><h3 style="color:yellow">Poll: Coroutine Familiarity ...</span><span class="fragment"> 1 year on</h3></span>
+        <section data-menu-title="What Else Do We Need?">
+          <span class="fragment"><h3 style="color:yellow">Coroutines ...</span><span class="fragment"> What Else Do We Need?</h3></span>
           <p>
             <ol>
-              <span class="fragment"><li>I am confident using coroutines</li></span>
-              <span class="fragment"><li>I understand coroutines better than a year ago</li></span>
-              <span class="fragment"><li>I understand a little more than a year ago</li></span>
-              <span class="fragment"><li>I am still just starting to understand coroutines</li></span>
+              <span class="fragment"><li>More examples (real-world and learning)</li></span>
+              <span class="fragment"><li>Fit within the wider concurrency framework</li></span>
+              <span class="fragment"><li>Empirical measurements</li></span>
+              <span class="fragment"><li>The future: library support</li></span>
             </ol>
-        </section>
-
-        <section>
-          <h2>Why this talk?</h2>
-          <span class="fragment" style="color:yellow">Lots of good introductory talks ... </span>
-          <span class="fragment" style="color:yellow">but, what's next?</span>
-          <p>
-          <ul>
-            <span class="fragment"><li>Advice: when and how to use coroutines</li></span>
-            <span class="fragment"><li>Examples: real-world and exemplar code</li></span>
-            <span class="fragment"><li>Insight: empirical evaluations</li></span>
-            <span class="fragment"><li>Update: what's coming in C++23/26</li></span>
-          </ul>
-          <aside class="notes">
-          Coroutines still feel a bit ephemeral. Deeply technical, still quite difficult to know when
-          to use them. I want to address this in this talk.
-          </aside>
+            <aside class="notes">
+            Coroutines still feel a bit ephemeral. Deeply technical, still quite difficult to know when
+            to use them. I want to address this in this talk.
+            </aside>
         </section>
 
         <section>
@@ -78,10 +65,10 @@
               <span class="fragment"><li>How C++20 Coroutines fit</span><span class="fragment"> (and work)</li></span>
             </ul>
             <span class="fragment"><li><a href="https://www.bluwireless.com/products/5g-tactical/">Mobile Wireless Networking</a> with Coroutines</li></span>
-            <span class="fragment"><li>Code Example: Web Serving with <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost.Beast</a></li></span>
+            <span class="fragment"><li>C++20 Example: Web Serving with <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost.Beast</a></li></span>
             <ul>
               <span class="fragment"><li>Synchronous, Asynchronous</li></span>
-              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/coroutine2/doc/html/coroutine2/overview.html">Boost.Coroutine2</a>, <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/awaitable/http_server_awaitable.cpp">Awaitables</a></li></span>
+              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/coroutine2/doc/html/coroutine2/overview.html">Boost.Coroutine</a>, <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/awaitable/http_server_awaitable.cpp">Awaitables</a></li></span>
               <span class="fragment"><li>Empirical analysis with <a href="https://httpd.apache.org/docs/2.4/programs/ab.html">Apache bench</a> (ab)</li></span>
             </ul>
             <span class="fragment"><li><a href="http://wg21.link/p2502">P2502:</a> std::generator</li></span>
@@ -168,6 +155,27 @@
 
         <section data-menu-title="Blu Wireless Devices">
           <img class="stretch" data-src="media/5G-tactical-comms.png" style="background:none; border:none; box-shadow:none;">
+        </section>
+
+        <section>
+          <h2>How Does it Work?</h2>
+          <ul>
+            <span class="fragment"><li>Implemented using Coroutines</li></span>
+            <ul>
+              <span class="fragment"><li>Combination of Modern C++ (17/20) and Lua</li></span>
+            </ul>
+            <span class="fragment"><li>Lots of asynchronous operations</li></span>
+            <ul>
+              <span class="fragment"><li>Scan, Connect, Disconnect</li></span>
+              <span class="fragment"><li>Around 40 high-level primitives</li></span>
+            </ul>
+            <span class="fragment"><li>Groups of coroutines operate in threads</li></span>
+            <span class="fragment"><li>Do useful work during latency windows</li></span>
+            <span class="fragment"><li>No race-conditions, issues with data sharing</li></span>
+          </ul>
+          <aside class="notes">
+          Why am I telling you this?
+          </aside>
         </section>
 
         <!--
