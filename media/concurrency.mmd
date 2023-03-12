@@ -1,0 +1,12 @@
+%% docker run --rm -u `id -u`:`id -g` -v /home/pascoej/Dropbox/Talks/accu2023:/data minlag/mermaid-cli -i concurrency.mmd -o concurrency.png -b transparent -t dark
+%% Run on live-editor, use snip tool, paste into gimp, use colour picker to idetify hex value of background colour, then set 'colour to alpha' and export as png
+
+flowchart LR
+    A[fa:fa-briefcase]-->B[fa:fa-briefcase]-->C[fa:fa-briefcase]-->D[fa:fa-briefcase]-- Running -->E{fa:fa-server Server}
+    F[fa:fa-briefcase]-->G[fa:fa-briefcase]-->H[fa:fa-briefcase]-->I[fa:fa-briefcase]-. Waiting .->E
+
+flowchart LR
+    A[fa:fa-briefcase]-->B[fa:fa-briefcase]-->C[fa:fa-briefcase]-->D[fa:fa-briefcase]-- Running -->E{fa:fa-server Executer}
+    F[fa:fa-briefcase]-->G[fa:fa-briefcase]-->H[fa:fa-briefcase]-->I[fa:fa-briefcase]-- Running -->J{fa:fa-server Executer}
+
+
