@@ -116,6 +116,8 @@
             architecture. So this means it can run four threads, in parallel, at the same instant. If we go one level deeper we can
             see that the Haswell microarchitecture is a dual-threaded, out-of-order microprocessor that is capable of decoding 5
             instructions, issuing 4 fused uops (micro operations) and dispatching 8 uops on each cycle (and its clocked at 4GHz)..
+
+            Fundamentally, concurrency is about harnessing latency.
             </aside>
             </aside>
         </section>
@@ -152,11 +154,23 @@
         </section>
 
         <section>
-          <h2>Processes</h2>
+          <h2><a href="https://www.gnu.org/software/pth/pth-manual.html#threading_background">Processes</a></h2>
             <ul>
-              <span class="fragment"><li></li></span>
+              <span class="fragment"><li>OS 'multitasks' by forking processes</li></span>
+              <span class="fragment"><li>Context switch occurs when:</li></span>
+              <ul>
+                <span class="fragment"><li>a process is blocked (e.g. semaphore)</li></span>
+                <span class="fragment"><li>or a pre-emptive time slice expires</li></span>
+              </ul>
+              <span class="fragment"><li>Overhead is high:</li></span>
+              <ul>
+                <span class="fragment"><li>VM tables, program code, heap, stack, fds, signals</li></span>
+                <span class="fragment"><li>Sharing data, syncrhonisation and scaling are hard</li></span>
+              </ul>
             </ul>
             <aside class="notes">
+            Event-driven applications are charactersied by two things, background processing tasks and lots of one-off requests that have
+            to be serviced. If you think about networking and GUIs, this is especially true.
             </aside>
         </section>
 
@@ -185,18 +199,6 @@
         <!-- PICTURE -->
 
 <!--
-
-2. Processes
-
-The most obvious form of concurrency
-Heavy-weight (includes lots of state)
-Context switch is high cost
-Context switch occurs when either a blocking system call, or a pre-emptive time slice has expired
-Critical sections must be protected with locks, mutexs etc.
-
-Pre-emptive scheduler (OS) triggers a context switch either because a process is blocked (e.g. on a mutex), or because a time-slice has expired.
-
-diagram
 
 3. Threads
 
