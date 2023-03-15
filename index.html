@@ -68,7 +68,8 @@
             <span class="fragment"><li>C++20 Example: Web Serving with <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost.Beast</a></li></span>
             <ul>
               <span class="fragment"><li>Synchronous, Asynchronous</li></span>
-              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/coroutine2/doc/html/coroutine2/overview.html">Boost.Coroutine</a>, <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/awaitable/http_server_awaitable.cpp">Awaitables</a></li></span>
+              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/coroutine2/doc/html/coroutine2/overview.html">Boost.Coroutine</a>, 
+                  <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/awaitable/http_server_awaitable.cpp">Awaitables</a></li></span>
               <span class="fragment"><li>Empirical analysis with <a href="https://httpd.apache.org/docs/2.4/programs/ab.html">Apache bench</a> (ab)</li></span>
             </ul>
             <span class="fragment"><li><a href="http://wg21.link/p2502">P2502:</a> std::generator</li></span>
@@ -138,18 +139,13 @@
               <span class="fragment"><li>Multiple coroutines run within a single thread</li></span>
             </ol>
             <p>
-            <span class="fragment" style="color:yellow">Note: don't confuse coroutines with <a href="http://wg21.link/n4024">Fibers</a><br>
-            (see <a href="https://www.boost.org/doc/libs/1_81_0/libs/fiber/doc/html/fiber/overview.html">Boost.Fiber</a>) and <a href="https://en.wikipedia.org/wiki/Green_thread">Green Threads</a></span>
+            <span class="fragment" style="color:yellow">Fundamentally, concurrency is about harnessing latency</span>
             <aside class="notes">
             A note of caution with the terms 'Coroutine', 'Fibers' and 'Green Threads'. They are sometimes used inter-changeably and
             there are differences. My personal view is that fibers can be implemented using coroutines (this is exactly what Lua
             does and Boost.Fiber is built on Boost.Coroutine), but they are not equivalent. For example, coroutines that are generators
             are clearly not fibers. Coroutines provide enhanced control flow semantics, whereas, fibers give you a co-operatively scheduled
             light-weight threading model (that resembles OS threads).
-
-            Green Threads are threads that are scheduled by a runtime library or a virtual machine (so not an OS thread). The name actually
-            comes from the early days of Java - it was a co-operative threading model in Java 1.1, that was abandoned in 1.3 (back in the days
-            of the JDK 1.x for anyone that remembers it).
             </aside>
         </section>
 
@@ -171,56 +167,51 @@
             <aside class="notes">
             Event-driven applications are charactersied by two things, background processing tasks and lots of one-off requests that have
             to be serviced. If you think about networking and GUIs, this is especially true.
+
+            Key point: if a process blocks after 5% of its timeslice, then the whole thing is context-switched, despite the possibility
+            that useful work can be done in other parts of the process.
             </aside>
         </section>
 
         <!-- PICTURE -->
 
         <section>
-          <h2>Threads</h2>
+          <h2><a href="https://www.gnu.org/software/pth/pth-manual.html#threading_background">Threads</a></h2>
             <ul>
-              <span class="fragment"><li></li></span>
+              <span class="fragment"><li>Light-weight threads in a heavy-weight process</li></span>
+              <span class="fragment"><li>Lower overhead (faster context switch):</li></span>
+              <ul>
+                <span class="fragment"><li>... stack, program counter, signal table</li></span>
+              </ul>
+              <span class="fragment"><li>C++03: OS, C++11: std::thread, C++20: std::jthread</li></span>
+              <span class="fragment" style="color:yellow"><li><a href="">Reentrancy</a>: correct when executed simultaneously</li></span>
+              <span class="fragment" style="color:yellow"><li><a href="">Thread safety</a>: the avoidance of race conditions</li></span>
+              <span class="fragment" style="color:yellow"><li><a href="https://en.wikipedia.org/wiki/Green_thread">Green Threads</a>: scheduled by a runtime library / VM</li></span>
             </ul>
             <aside class="notes">
+
+            Green Threads are threads that are scheduled by a runtime library or a virtual machine (so not an OS thread). The name actually
+            comes from the early days of Java - it was a co-operative threading model in Java 1.1, that was abandoned in 1.3 (back in the days
+            of the JDK 1.x for anyone that remembers it).
             </aside>
         </section>
 
         <!-- PICTURE -->
 
         <section>
-          <h2>Coroutines (Fibers)</h2>
+          <h2><a href="https://en.cppreference.com/w/cpp/language/coroutines">Coroutines</a> (as <a href="http://wg21.link/n4024">Fibers</a>)</h2>
             <ul>
-              <span class="fragment"><li></li></span>
+              <span class="fragment"><li>Multiple coroutines in a single thread</li></span>
+              <span class="fragment"><li>Scheduled by a 'dispatcher' (same thread)</li></span>
+              <span class="fragment"><li>No races, synchronisation or data sharing issues</li></span>
+              <span class="fragment"><li>Allows work when part of the thread is blocked</li></span>
+              <span class="fragment" style="color:yellow"><li>See <a href="https://www.boost.org/doc/libs/1_81_0/libs/fiber/doc/html/fiber/overview.html">Boost.Fiber</a> for details</li></span>
             </ul>
             <aside class="notes">
             </aside>
         </section>
 
         <!-- PICTURE -->
-
-<!--
-
-3. Threads
-
-Lighter weight - substantially less state
-Partitions a process so that useful work can be done in other parts when one part is blocked
-Give details of the thread scheduler
-
-Give C++ timeline
-
-diagram
-
-Reentrancy vs. thread safety
-
-4. Coroutines
-
-Allow 
-
-diagram (mermaid)
-
-Add mention to HALO optimisation wg21.link/p0981r0
-
--->
 
       </section>
       <section>
@@ -230,20 +221,19 @@ Add mention to HALO optimisation wg21.link/p0981r0
         </section>
 
         <section>
-          <h2><a href="http://bluwireless.com/applications/defence-and-perimeter-security/">Blu Wireless:</a> Mobile Mesh</h2>
+          <h2><a href="http://bluwireless.com/applications/defence-and-perimeter-security/">Blu Wireless:</a> <a href="https://www.bluwireless.com/applications/defence-and-perimeter-security/">Mobile Mesh</a></h2>
           <ul>
             <span class="fragment"><li>IP networking over 5G mmWave (60 GHz) modems</li></span>
             <span class="fragment"><ul><li>802.11ad MAC + PHY (Hydra) + software</li></ul></span>
             <span class="fragment"><li>High-bandwidth, low latency mobile Internet</li></span>
-            <span class="fragment"><ul><li>Up to 3Gbps wireless links (up to 4km)</ul></span>
+            <span class="fragment"><ul><li>Up to 3 Gbps wireless links (up to 4 km)</ul></span>
             <span class="fragment"><li>Embedded quad-core ARMv8 NPUs</li></span>
           </ul>
           <aside class="notes">
-
           </aside>
         </section>
 
-        <section data-menu-title="Blu Wireless Mobile Mesh"
+        <section data-menu-title="Mobile Mesh Video"
                  data-state="hideControls",
                  data-background-video="media/BWT_MobileMesh.mp4"
                  id="video">
@@ -256,7 +246,7 @@ Add mention to HALO optimisation wg21.link/p0981r0
         <section>
           <h2>How Does it Work?</h2>
           <ul>
-            <span class="fragment"><li>Implemented using Coroutines</li></span>
+            <span class="fragment"><li>Implemented using Coroutines as Fibers</li></span>
             <ul>
               <span class="fragment"><li>Combination of Modern C++ (17/20) and Lua</li></span>
             </ul>
@@ -266,11 +256,8 @@ Add mention to HALO optimisation wg21.link/p0981r0
               <span class="fragment"><li>Around 40 high-level primitives</li></span>
             </ul>
             <span class="fragment"><li>Groups of coroutines operate in threads</li></span>
-            <span class="fragment"><li>Do useful work during latency windows</li></span>
-            <span class="fragment"><li>No race-conditions, issues with data sharing</li></span>
           </ul>
           <aside class="notes">
-          Why am I telling you this?
           </aside>
         </section>
 
@@ -310,35 +297,8 @@ Add mention to HALO optimisation wg21.link/p0981r0
       </section>
       <section>
 
-        <section>
-          <h2>C++20 Coroutines</h2>
-          <span class="fragment" style="color:yellow">Coroutines are subroutines </span>
-          <span class="fragment" style="color:yellow">with enhanced semantics</span><p>
-          <ul>
-            <span class="fragment"><li>Invoked by a caller </span>
-            <span class="fragment">(and return to a caller) ...</li></span>
-            <span class="fragment"><li>Can suspend execution</li></span>
-            <span class="fragment"><li>Can resume execution (at a later time)</li></span>
-          </ul>
-          <aside class="notes">
-          When I am thinking about coroutines, I quite like the term subroutine because a subroutine can be either a function or a coroutine.
-          So, the key benefit of a coroutine is its suspension / resumption semantics. A function is called from a caller and then returns.
-          A coroutine is initially called from a caller, but can suspend its execution (at which point control is returned to the caller) and
-          then 'later' is resumed (typically after an asynchronous event or the completion of some computation).
-          </aside>
-        </section>
-
-        <section>
-          <h2>Benefits</h2>
-          <span class="fragment" style="color:yellow">Write asynchronous code ...</span><br>
-          <span class="fragment" style="color:yellow">with the readability of synchronous code</span><p>
-          <ul>
-            <span class="fragment"><li>Useful for networking</li></span>
-            <span class="fragment"><li>Lots of blocking operations (connect, send, receive)</li></span>
-            <span class="fragment"><li>Multi-threading (send and receive threads)</li></span>
-            <span class="fragment"><li>Asynchronous operations mean callbacks</li></span>
-            <span class="fragment"><li>Control flow fragments</li></span>
-          </ul>
+        <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
+          <h1>C++20 Coroutines</h1>
         </section>
 
         <section>
@@ -547,6 +507,10 @@ co_await async_write(..., use_awaitable);
 
       <section>
 
+        <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
+          <h1>Conclusions</h1>
+        </section>
+
         <section>
           <h2>Questions?</h2>
           <p><p>
@@ -555,13 +519,12 @@ co_await async_write(..., use_awaitable);
 
           <a href="http://jamespascoe.github.io/accu2023">http://jamespascoe.github.io/accu2023</a><br>
           <a href="https://github.com/jamespascoe/accu2023-example-code.git"><font size="6">https://github.com/jamespascoe/accu2023-example-code.git</font></a>
+          <p>
+          <font style="color:yellow">ACCU Bristol and Bath Meetup Coordinator</font>
         </section>
 
-<!--
-  Bristol and Bath Meetup
--->
+      </section>
 
-        </section>
       </div>
     </div>
 
