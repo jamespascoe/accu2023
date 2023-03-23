@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Advanced C++20 Coroutines</title>
+    <title>Applied C++20 Coroutines</title>
 
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?">
 
@@ -29,8 +29,8 @@
         </section>
         -->
 
-        <section data-menu-title="Advanced C++20 Coroutines">
-          <h2>Advanced C++20 Coroutines</h2>
+        <section data-menu-title="Applied C++20 Coroutines">
+          <h2>Applied C++20 Coroutines</h2>
           <p>
             <small>
               Jim (James) Pascoe<br>
@@ -120,7 +120,7 @@
             see that the Haswell microarchitecture is a dual-threaded, out-of-order microprocessor that is capable of decoding 5
             instructions, issuing 4 fused uops (micro operations) and dispatching 8 uops on each cycle (and its clocked at 4GHz)..
 
-            Fundamentally, concurrency is about harnessing latency.
+            Concurrency allows us to harness latency.
             </aside>
             </aside>
         </section>
@@ -141,7 +141,7 @@
               <span class="fragment"><li>Multiple coroutines run within a single thread</li></span>
             </ol>
             <p>
-            <span class="fragment" style="color:yellow">Fundamentally, concurrency is about harnessing latency</span>
+            <span class="fragment" style="color:yellow">Concurrency allows us to harness latency</span>
             <aside class="notes">
             A note of caution with the terms 'Coroutine', 'Fibers' and 'Green Threads'. They are sometimes used inter-changeably and
             there are differences. My personal view is that fibers can be implemented using coroutines (this is exactly what Lua
@@ -219,7 +219,7 @@
       <section>
 
         <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
-          <h1>Coroutines in the Real-World</h1>
+          <h1>Real-World Example</h1>
         </section>
 
         <section>
@@ -248,7 +248,7 @@
         <section>
           <h2>How Does it Work?</h2>
           <ul>
-            <span class="fragment"><li>Implemented using Coroutines as Fibers</li></span>
+            <span class="fragment"><li>L1 management implemented using coroutines</li></span>
             <ul>
               <span class="fragment"><li>Combination of Modern C++ (17/20) and Lua</li></span>
             </ul>
@@ -263,38 +263,161 @@
           </aside>
         </section>
 
-        <!--
- 
-          Why am I showing this?
-            MCM is written in modern C++
-            We are going to write a small Mesh simulator
 
-            LUA/SWIG example:
 
-              3 coroutines:
-                - connector (responsible for maitaining a connection to the mesh)
-                  - 'scans' i.e. tries to connect (via a socket) to other nodes. Probably best to just wait some time and return a 'PCP'.
-                  - 'connects' i.e. makes the connection. Typically would authenticate/agree encryption.
+        <section>
+          <h2>Lua Behavior</h2>
+          <pre class="stretch"><code class="lua" data-trim data-line-numbers="|110-138|15-43|45-73|75-108|">
+--[[
 
-                - event_monitor
-                  - randomly returns 'disconnected' i.e. mesh behaviour polls event_monitor and after
-                    a random period (e.g. between 1 and 10 seconds), gets a return value which says 'disconnected'.
-                    The Mesh behaviour (at this point), sets a flag to say 'not connected' which triggers the
-                    'connector' coroutine to 'scan' (i.e. wait for a random interval and return a result) and
-                    'connect'.
+ lua_fiber.lua
 
-                - dispatcher
-                  - as before
+ This behaviour provides a simple example of fibers. The C++
+ actions allow the behaviour to be arbitraily complex, whilst
+ mocking out the low-level interactions with the hardware.
 
-            Mesh Behaviour:
-              Implements coroutines
+ Copyright © Blu Wireless. All Rights Reserved.
+ Licensed under the MIT license. See LICENSE file in the project.
+ Feedback: james.pascoe@bluwireless.com
 
-            C++ actions:
-              Implement scan
-              Implement connect
-              Implement event_monitor (provides 'IsConnected' method, which after a period 
+]]
 
-        -->
+function ping_fiber (connector, remote_port)
+
+  Actions.Log.info(
+    "ping_fiber: connecting to port: " .. remote_port
+  )
+
+  local timer = Actions.Timer()
+
+  -- Connect to a node and send a 'ping' message
+  while true do
+
+    connector:Send("localhost", remote_port, "PING")
+
+    repeat
+      coroutine.yield()
+    until (connector:IsMessageAvailable())
+
+    Actions.Log.info(
+      "ping_fiber: received: " .. connector:GetNextMessage()
+    )
+
+    timer(Actions.Timer.WaitType_NOBLOCK, 1, "s", 1)
+    while timer:IsWaiting() do
+      coroutine.yield()
+    end
+
+  end
+
+end
+
+function pong_fiber (connector, remote_port)
+
+  Actions.Log.info(
+    "pong_fiber: connecting to port: " .. remote_port
+  )
+
+  local timer = Actions.Timer()
+
+  -- Connect to a node and send a 'pong' message
+  while true do
+
+    repeat
+      coroutine.yield()
+    until (connector:IsMessageAvailable())
+
+    Actions.Log.info(
+      "pong_fiber: received: " .. connector:GetNextMessage()
+    )
+
+    connector:Send("localhost", remote_port, "PONG")
+
+    timer(Actions.Timer.WaitType_NOBLOCK, 1, "s", 2)
+    while timer:IsWaiting() do
+      coroutine.yield()
+    end
+
+  end
+
+end
+
+-- Coroutine dispatcher (see Section 9.4 of 'Programming in Lua')
+function dispatcher (coroutines)
+
+  local timer = Actions.Timer()
+
+  while true do
+    if next(coroutines) == nil then break end -- all done
+
+    for name, co in pairs(coroutines) do
+      local status, res = coroutine.resume(co)
+
+      if res then -- coroutine has exited
+
+        if type(res) == "string" then  -- runtime error
+          Actions.Log.critical("Lua coroutine '" .. tostring(name)
+                               .. "' exited with error " .. res)
+        else
+          Actions.Log.warn("Lua coroutine '" .. tostring(name) ..
+                           "' has exited")
+        end
+
+        coroutines[name] = nil
+
+        break
+      end
+    end
+
+    -- Run the dispatcher every 1 ms. Note, that a blocking
+    -- timer is required to prevent lua_mesh from consuming
+    -- 100% of a core.
+    timer(Actions.Timer.WaitType_BLOCK, 1, "ms", 3)
+
+  end
+end
+
+local function main(args)
+
+  print("Welcome to Lua Mesh !")
+
+  if (not args or not args["port"]) then
+    print("Usage: lua_mesh lua_mesh.lua -a port=&ltlisten port&gt")
+    os.exit(1)
+  end
+
+  print(
+    string.format("Starting LuaMesh:\n" ..
+                  "  listen port: %d\n", tonumber(args["port"]))
+  )
+
+  local connector = Actions.Connector(args["port"])
+  local remote_port = args["port"] == 7777 and "8888" or "7777"
+
+  -- Create co-routines
+  local coroutines = {}
+  coroutines["ping"] = coroutine.create(ping_fiber)
+  coroutine.resume(coroutines["ping"], connector, remote_port)
+
+  coroutines["pong"] = coroutine.create(pong_fiber)
+  coroutine.resume(coroutines["pong"], connector, remote_port)
+
+  -- Run the main loop
+  dispatcher(coroutines)
+
+end
+
+local behaviour = {
+  name = "lua_fiber",
+  description = "A Lua behaviour to demonstrate fibers",
+  entry_point = main
+}
+
+return behaviour
+          </code></pre>
+        </section>
+
+
 
       </section>
       <section>
