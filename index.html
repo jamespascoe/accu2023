@@ -219,7 +219,7 @@
       <section>
 
         <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
-          <h1>Real-World Example</h1>
+          <h1>Coroutines Applied</h1>
         </section>
 
         <section>
@@ -245,8 +245,8 @@
           <img class="stretch" data-src="media/5G-tactical-comms.png" style="background:none; border:none; box-shadow:none;">
         </section>
 
-        <section>
-          <h2>How Does it Work?</h2>
+        <section data-menu-title="Connection Management">
+          <h2><a href="https://www.bluwireless.com/products/mobile-connection-manager/">Mobile Connection Management</a></h2>
           <ul>
             <span class="fragment"><li>L1 management implemented using coroutines</li></span>
             <ul>
@@ -255,30 +255,45 @@
             <span class="fragment"><li>Lots of asynchronous operations</li></span>
             <ul>
               <span class="fragment"><li>Scan, Connect, Disconnect</li></span>
-              <span class="fragment"><li>Around 40 high-level primitives</li></span>
+              <span class="fragment"><li>Around 40 primitives (called 'Actions')</li></span>
             </ul>
             <span class="fragment"><li>Groups of coroutines operate in threads</li></span>
+            <ul>
+              <span class="fragment"><li>No race conditions or data sharing limitations</li></span>
+              <span class="fragment"><li>Concurrency combined with Parallelism</li></span>
+            </ul>
           </ul>
           <aside class="notes">
           </aside>
         </section>
 
+        <section data-menu-title="Mobile Mesh Architecture">
+          <img class="stretch" data-src="media/mobile_mesh_architecture.png" style="background:none; border:none; box-shadow:none;">
+        </section>
 
+        <section data-menu-title="Lua Fiber Example">
+          <h2><a href="">Example: Lua Networking Fibers</a></h2>
+          <ul>
+            <span class="fragment"><li></li></span>
+          </ul>
+          <aside class="notes">
+          This example is designed to be fairly powerful. Simple Lua behaviour (that's easy to grasp), but the
+          architecture on which it sits is powerful. C++ to Lua bindings via Swig, multi-level logging using
+          spdlog, network comms via Boost.Asio with a CMake build flow. So, the idea is that the example is
+          staightforward to grasp but then you can clone it, take it forward and use it in your own work.
+          </aside>
+        </section>
+
+        <section data-menu-title="Lua Fibers Architecture">
+          <img class="stretch" data-src="media/lua_fibers.png" style="background:none; border:none; box-shadow:none;">
+        </section>
 
         <section>
           <h2>Lua Behavior</h2>
           <pre class="stretch"><code class="lua" data-trim data-line-numbers="|110-138|15-43|45-73|75-108|">
 --[[
 
- lua_fiber.lua
-
- This behaviour provides a simple example of fibers. The C++
- actions allow the behaviour to be arbitraily complex, whilst
- mocking out the low-level interactions with the hardware.
-
- Copyright © Blu Wireless. All Rights Reserved.
- Licensed under the MIT license. See LICENSE file in the project.
- Feedback: james.pascoe@bluwireless.com
+ lua_fiber.lua - provides a simple example of fibers.
 
 ]]
 
@@ -417,7 +432,249 @@ return behaviour
           </code></pre>
         </section>
 
+        <section data-menu-title="Connector Action: hpp">
+          <h2><a href="">Connector Action</a></h2>
+            <pre class="stretch"><code class="c++" style="width:102%" data-trim data-line-numbers="|43-61|">
+//
+// lua_fiber_connector_action.hpp
+//
 
+#include "asio/asio.hpp"
+
+class Connector {
+public:
+  enum class ErrorType { SUCCESS, RESOLVE_FAILED, CONNECT_FAILED };
+
+  inline static int const default_port = 7777;
+
+  Connector(unsigned short port = default_port);
+
+  ~Connector();
+
+  // Do not allow instances to be copied or moved
+  Connector(Connector const& rhs) = delete;
+  Connector(Connector&& rhs) = delete;
+  Connector& operator=(Connector const& rhs) = delete;
+  Connector& operator=(Connector&& rhs) = delete;
+
+  // Send a message to a remote behaviour
+  ErrorType Send(std::string const& hostname_or_ip,
+                 std::string const& port,
+                 std::string const& message);
+
+  // Returns whether a message is available to be read
+  bool IsMessageAvailable(void) { return !m_messages.empty(); }
+
+  // Returns the most recent message (or an empty string if none
+  // are available)
+  std::string GetNextMessage(void);
+
+private:
+  using tcp = asio::ip::tcp;
+
+  // Max number of messages to retain
+  inline static const int max_messages = 32;
+
+  // Encapsulate a TCP connection and the data sent over it. Note
+  // that this is based on the ASIO Asychronous TCP server tutorial.
+  class tcp_connection {
+  public:
+    using pointer = std::shared_ptr&lttcp_connection$gt;
+
+    static pointer create(asio::io_context& io_context) {
+      return pointer(new tcp_connection(io_context));
+    }
+
+    tcp::socket& socket() { return m_socket; }
+
+    std::string& data() { return m_data; }
+
+  private:
+    tcp_connection(asio::io_context& io_context) :
+      m_socket(io_context) {}
+
+    tcp::socket m_socket;
+    std::string m_data;
+  };
+
+  // Asynchronous handlers for reading and accepting connections
+  void handle_read(asio::error_code const& error,
+                   std::size_t bytes_transferred,
+                   tcp_connection::pointer connection);
+
+  void handle_write(asio::error_code const& error,
+                    std::size_t bytes_transferred,
+                    tcp_connection::pointer connection);
+
+  void handle_accept(tcp_connection::pointer new_connection,
+                     asio::error_code const& error);
+
+  void start_accept();
+
+  // Member variables
+  asio::io_context m_io_context;
+  asio::ip::tcp::acceptor m_acceptor;
+
+  std::thread m_thread;
+
+  // FIFO vector to store received messages
+  std::vector&ltstd::string&gt m_messages;
+};
+          </code></pre>
+          <aside class="notes">
+          </aside>
+        </section>
+
+        <section data-menu-title="Connector Action: cpp">
+          <h2><a href="">Connector Action</a></h2>
+            <pre class="stretch"><code class="c++" style="width:102%" data-trim data-line-numbers="">
+//
+// lua_fiber_connector_action.cpp
+//
+
+#include "lua_fiber_action_connector.hpp"
+
+#include "lua_fiber_log_manager.hpp"
+
+Connector::Connector(unsigned short port)
+    : m_acceptor(m_io_context, tcp::endpoint(tcp::v4(), port)) {
+  start_accept();
+
+  m_thread = std::thread([this]() { m_io_context.run(); });
+
+  log_trace("Connector action starting");
+}
+
+Connector::~Connector() {
+  log_trace("Cleaning up in Connector action");
+
+  m_io_context.stop();
+  m_thread.join();
+
+  log_trace("Connector action exiting");
+}
+
+// Send a message to a remote behaviour
+Connector::ErrorType Connector::Send(std::string const& host,
+                                     std::string const& port,
+                                     std::string const& message) {
+  // Resolve the destination endpoint
+  tcp::resolver resolver(m_io_context);
+  tcp::resolver::results_type endpoints;
+
+  try {
+    endpoints = resolver.resolve(host, port);
+  } catch (asio::system_error& e) {
+    log_error(
+        "Connector send failed: unable to resolve {}:{}",
+        host, port);
+
+    return ErrorType::RESOLVE_FAILED;
+  }
+
+  // Open a connection
+  tcp_connection::pointer connection =
+    tcp_connection::create(m_io_context);
+
+  try {
+    asio::connect(connection-&gtsocket(), endpoints);
+  } catch (asio::system_error& e) {
+    log_error("Connector send failed: could not connect to {}:{}",
+              host, port);
+
+    return ErrorType::CONNECT_FAILED;
+  }
+
+  asio::async_write(
+    connection-&gtsocket(),
+    asio::buffer(message),
+    [this, connection](const asio::error_code& error,
+                       std::size_t bytes_transferred) {
+      handle_write(error, bytes_transferred, connection);
+    }
+  );
+
+  return ErrorType::SUCCESS;
+}
+
+// Returns the most recent message (or an empty string
+// if none are available)
+std::string Connector::GetNextMessage(void) {
+  if (!IsMessageAvailable())
+    return "";
+
+  std::string ret = m_messages.front();
+
+  m_messages.erase(m_messages.begin());
+
+  return ret;
+}
+
+// Asynchronous handlers for reading and accepting connections
+void Connector::handle_read(asio::error_code const&gt error,
+                            std::size_t bytes_transferred,
+                            tcp_connection::pointer connection) {
+  if (!error || error == asio::error::eof) {
+    // Prevent the message array from growing uncontrollably
+    if (m_messages.size() &gt max_messages)
+      m_messages.erase(m_messages.begin());
+
+    m_messages.emplace_back(connection-&gt data());
+
+    log_info("Received message ({} bytes): {}",
+             bytes_transferred,
+             connection-&gtdata());
+  } else
+    log_error("Connector read error: {}", error.message());
+}
+
+// Note the 'maybe_unused' attribute for the TCP connection. This
+// ensures that the underlying TCP socket is not closed until the
+// write handler has exited.
+void Connector::handle_write(
+    asio::error_code const& error,
+    std::size_t bytes_transferred,
+    [[maybe_unused]] tcp_connection::pointer connection) {
+  if (!error)
+    log_info("Sent message ({} bytes)", bytes_transferred);
+  else
+    log_error("Connector send error: {}", error.message());
+}
+
+void Connector::handle_accept(tcp_connection::pointer connection,
+                              asio::error_code const& error) {
+  if (!error) {
+    log_debug("Accepted message connection");
+
+    asio::async_read(
+      connection-&gtsocket(),
+      asio::dynamic_buffer(connection-&gtdata()),
+      [this, connection](const asio::error_code& error,
+                         std::size_t bytes_transferred) {
+        handle_read(error, bytes_transferred, connection);
+      }
+    );
+  } else
+    log_error("Connector accept error: {}", error.message());
+
+  start_accept();
+}
+
+void Connector::start_accept() {
+  tcp_connection::pointer connection =
+      tcp_connection::create(m_acceptor.get_executor().context());
+
+  m_acceptor.async_accept(
+    connection-&gtsocket(),
+    [this, connection](const asio::error_code& error) {
+      handle_accept(connection, error);
+    }
+  );
+}
+          </code></pre>
+          <aside class="notes">
+          </aside>
+        </section>
 
       </section>
       <section>
