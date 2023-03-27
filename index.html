@@ -44,8 +44,8 @@
             </small>
         </section>
 
-        <section data-menu-title="What Else Do We Need?">
-          <span class="fragment"><h3 style="color:yellow">Coroutines ...</span><span class="fragment"> What Else Do We Need?</h3></span>
+        <section data-menu-title="What Next?">
+          <span class="fragment"><h3 style="color:yellow">Coroutines ...</span><span class="fragment"> What Next?</h3></span>
           <p>
             <ol>
               <span class="fragment"><li>Fit within the wider concurrency framework</li></span>
@@ -274,7 +274,12 @@
         <section data-menu-title="Lua Fiber Example">
           <h2><a href="">Example: Lua Networking Fibers</a></h2>
           <ul>
-            <span class="fragment"><li></li></span>
+            <span class="fragment"><li>Lua behaviour: two nodes sending messages</li></span>
+            <span class="fragment"><li>Includes two actions: 'Connector' and 'Log'</li></span>
+            <span class="fragment"><li>Also provides: <a href="http://swig.org">SWIG</a>, CMake, Lua 'main' code</li></span>
+            <span class="fragment"><li>Other bindings exist: e.g. 
+              <a href="https://github.com/ThePhD/sol2">the PhD's Sol3</a></li>
+            </span>
           </ul>
           <aside class="notes">
           This example is designed to be fairly powerful. Simple Lua behaviour (that's easy to grasp), but the
@@ -675,6 +680,14 @@ void Connector::start_accept() {
           <aside class="notes">
           </aside>
         </section>
+
+        <!--
+        <section data-menu-title="Lua Fiber Video"
+                 data-state="hideControls",
+                 data-background-video="media/PingPong.mp4"
+                 id="video">
+        </section>
+        -->
 
       </section>
       <section>
