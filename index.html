@@ -888,22 +888,58 @@ co_await async_write(..., use_awaitable);
 
         -->
 
-        <!--
-
-          Section on 'the future'
-
-          P2502
-          libunifex
-          Std::exec
-          Conclusions
-          Questions
-
-        -->
-
       <section>
 
         <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
           <h1>Conclusions</h1>
+        </section>
+
+        <section>
+          <h2>C++23/26 Coroutine Update</h2>
+            <ul>
+              <span class="fragment"><li><a href="http://wg21.link/p2502">P2502</a>: standardised generator <code>std::generator</code></li></span>
+              <span class="fragment"><ul><li>Models <code>std::ranges::input_range</code></li></ul></span>
+              <span class="fragment"><ul><li>Approved for C++23 (June 2022)</li></ul></span>
+              <span class="fragment"><ul><li>Not yet implemented in mainstream compilers</li></ul></span>
+              <span class="fragment"><ul><li>Reference implementation: <a href="https://godbolt.org/z/5hcaPcfvP">godbolt.org</a></li></ul></span>
+
+              <span class="fragment"><li><a href="http://wg21.link/p2300">P2300R6</a>: <code>std::execution</code></li></span>
+              <span class="fragment"><ul><li>Standardised asynchronous execution</li></ul></span>
+              <span class="fragment"><ul><li>... on generic execution contexts</li></ul></span>
+              <span class="fragment"><ul><li>Targeting C++26 (see also: <a href="https://github.com/facebookexperimental/libunifex">libunifex</a>)</li></ul></span>
+            </ul>
+            <aside class="notes">
+The coroutine language feature mitigates these shortcomings somewhat with the HALO optimization Halo: coroutine Heap Allocation eLision Optimization: the joint response, which leverages existing compiler optimizations such as allocation elision and devirtualization to inline the coroutine, completely eliminating the runtime overhead. However, HALO requires a sophisiticated compiler, and a fair number of stars need to align for the optimization to kick in. In our experience, more often than not in real-world code today’s compilers are not able to inline the coroutine, resulting in allocations and indirections in the generated code.
+
+In a suite of generic async algorithms that are expected to be callable from hot code paths, the extra allocations and indirections are a deal-breaker. It is for these reasons that we consider coroutines a poor choise for a basis of all standard async.
+            </aside>
+        </section>
+
+        <section>
+          <h2>Conclusion</h2>
+            <ul>
+              <span class="fragment"><li>C++20 coroutines provide a language capability</li></span>
+              <span class="fragment"><ul><li>Functions can be suspended and resumed</li></ul></span>
+              <span class="fragment"><li>Coroutines allow asynchronous code to be written</li></span>
+              <span class="fragment"><ul><li>With the readability of synchronous code</li></ul></span>
+              <span class="fragment"><li>Using coroutines in user-code:</li></span>
+              <span class="fragment"><ul><li>Library support is improving</li></ul></span>
+              <span class="fragment"><ul><li>Persevere with <a href="#/key-references">key references</a></li></ul></span>
+            </ul>
+        </section>
+
+        <section id="key-references">
+          <h2>Key References</h2>
+            <ul>
+              <span class="fragment"><li><a href="https://lewissbaker.github.io/">Lewis Baker's</a> blog posts:</li></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/09/25/coroutine-theory">Coroutine Theory</a></li></ul></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">Understanding operator co_await</a></li></ul></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Understanding the promise type</a></li></ul></span>
+              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2020/05/11/understanding_symmetric_transfer">Understanding Symmetric Transfer</a></li></ul></span>
+              <span class="fragment"><li><a href="https://www.scs.stanford.edu/~dm">Dave Mazière's</a> blog post:</li></span>
+              <span class="fragment"><ul><li><a href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html">My tutorial and take on C++20 coroutines</a></li></ul></span>
+              <span class="fragment"><li><a href="https://wg21.link/n4775">Gor Nishanov:</a></li></span>
+            </ul>
         </section>
 
         <section>
