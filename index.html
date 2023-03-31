@@ -175,8 +175,6 @@
             </aside>
         </section>
 
-        <!-- PICTURE -->
-
         <section>
           <h2><a href="https://www.gnu.org/software/pth/pth-manual.html#threading_background">Threads</a></h2>
             <ul>
@@ -198,8 +196,6 @@
             </aside>
         </section>
 
-        <!-- PICTURE -->
-
         <section>
           <h2><a href="https://en.cppreference.com/w/cpp/language/coroutines">Coroutines</a> (as <a href="http://wg21.link/n4024">Fibers</a>)</h2>
             <ul>
@@ -212,8 +208,6 @@
             <aside class="notes">
             </aside>
         </section>
-
-        <!-- PICTURE -->
 
       </section>
       <section>
@@ -760,17 +754,27 @@ void Connector::start_accept() {
         </section>
 
         <section id="key-references">
-          <h2>Key References</h2>
+          <h2>Key Talks and References</h2>
             <ul>
+              <span class="fragment"><li>Lots of good talks at CppCon 2022</li></span>
+              <ul>
+                <small>
+                  <span class="fragment"><li><a href="https://www.youtube.com/watch?v=lm10Cj-HNKQ">Understanding C++ Coroutines by Example: Generators - Pavel Novikov</a></li></span>
+                  <span class="fragment"><li><a href="https://www.youtube.com/watch?v=lm10Cj-HNKQ">Deciphering C++ Coroutines - A Diagrammatic Cheat Sheet - Andreas Weis</a></li></span>
+                  <span class="fragment"><li><a href="https://www.youtube.com/watch?v=EGqz7vmoKco">C++ Coroutines, from Scratch - Phil Nash</a></li></span>
+                  <span class="fragment"><li><a href="https://www.youtube.com/watch?v=8sEe-4tig_A">C++20's Coroutines for Beginners - Andreas Fertig</a></li></span>
+                </small>
+              </ul>
+              <br>
               <span class="fragment"><li><a href="https://lewissbaker.github.io/">Lewis Baker's</a> blog posts:</li></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/09/25/coroutine-theory">Coroutine Theory</a></li></ul></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">Understanding operator co_await</a></li></ul></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Understanding the promise type</a></li></ul></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2020/05/11/understanding_symmetric_transfer">Understanding Symmetric Transfer</a></li></ul></span>
-              <span class="fragment"><li><a href="https://www.scs.stanford.edu/~dm">Dave Mazière's</a> blog post:</li></span>
-              <span class="fragment"><ul><li><a href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html">My tutorial and take on C++20 coroutines</a></li></ul></span>
-              <span class="fragment"><li><a href="https://wg21.link/n4775">Gor Nishanov:</a></li></span>
-              <span class="fragment"><ul><li><a href="https://wg21.link/n4775">C++ Extensions for Coroutines (N4775)</a></li></ul></span>
+              <ul>
+                <small>
+                  <span class="fragment"><li><a href="https://lewissbaker.github.io/2017/09/25/coroutine-theory">Coroutine Theory</a></li></span>
+                  <span class="fragment"><li><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">Understanding operator co_await</a></li></span>
+                  <span class="fragment"><li><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Understanding the promise type</a></li></span>
+                  <span class="fragment"><li><a href="https://lewissbaker.github.io/2020/05/11/understanding_symmetric_transfer">Understanding Symmetric Transfer</a></li></span>
+                </small>
+              </ul>
             </ul>
         </section>
 
@@ -900,7 +904,7 @@ co_await async_write(..., use_awaitable);
               <span class="fragment"><li><a href="http://wg21.link/p2502">P2502</a>: standardised generator <code>std::generator</code></li></span>
               <span class="fragment"><ul><li>Models <code>std::ranges::input_range</code></li></ul></span>
               <span class="fragment"><ul><li>Approved for C++23 (June 2022)</li></ul></span>
-              <span class="fragment"><ul><li>Not yet implemented in mainstream compilers</li></ul></span>
+              <span class="fragment"><ul><li>Not yet implemented in standard libraries</li></ul></span>
               <span class="fragment"><ul><li>Reference implementation: <a href="https://godbolt.org/z/5hcaPcfvP">godbolt.org</a></li></ul></span>
 
               <span class="fragment"><li><a href="http://wg21.link/p2300">P2300R6</a>: <code>std::execution</code></li></span>
@@ -918,27 +922,13 @@ In a suite of generic async algorithms that are expected to be callable from hot
         <section>
           <h2>Conclusion</h2>
             <ul>
-              <span class="fragment"><li>C++20 coroutines provide a language capability</li></span>
-              <span class="fragment"><ul><li>Functions can be suspended and resumed</li></ul></span>
+              <span class="fragment"><li>Fibers provide a light-weight alternative to threading</li></span>
+              <span class="fragment"><ul><li>Combines concurrency with parallelism</li></ul></span>
               <span class="fragment"><li>Coroutines allow asynchronous code to be written</li></span>
               <span class="fragment"><ul><li>With the readability of synchronous code</li></ul></span>
               <span class="fragment"><li>Using coroutines in user-code:</li></span>
-              <span class="fragment"><ul><li>Library support is improving</li></ul></span>
+              <span class="fragment"><ul><li><a href="https://www.boost.org/doc/libs/1_81_0/doc/html/boost_asio.html">Boost.Asio</a> and <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost.Beast</a> are great for this</li></ul></span>
               <span class="fragment"><ul><li>Persevere with <a href="#/key-references">key references</a></li></ul></span>
-            </ul>
-        </section>
-
-        <section id="key-references">
-          <h2>Key References</h2>
-            <ul>
-              <span class="fragment"><li><a href="https://lewissbaker.github.io/">Lewis Baker's</a> blog posts:</li></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/09/25/coroutine-theory">Coroutine Theory</a></li></ul></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2017/11/17/understanding-operator-co-await">Understanding operator co_await</a></li></ul></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Understanding the promise type</a></li></ul></span>
-              <span class="fragment"><ul><li><a href="https://lewissbaker.github.io/2020/05/11/understanding_symmetric_transfer">Understanding Symmetric Transfer</a></li></ul></span>
-              <span class="fragment"><li><a href="https://www.scs.stanford.edu/~dm">Dave Mazière's</a> blog post:</li></span>
-              <span class="fragment"><ul><li><a href="https://www.scs.stanford.edu/~dm/blog/c++-coroutines.html">My tutorial and take on C++20 coroutines</a></li></ul></span>
-              <span class="fragment"><li><a href="https://wg21.link/n4775">Gor Nishanov:</a></li></span>
             </ul>
         </section>
 
@@ -980,10 +970,11 @@ In a suite of generic async algorithms that are expected to be callable from hot
         preloadIframes: true,
         progress: false,
         touch: true,
+        keyboard: true,
         keyboard: {
           67: () => { /* Keycode for the letter 'c' i.e. 'controls' */
             var currentSlide = Reveal.getCurrentSlide();
-            var currentVideo = currentSlide.getElementsByTagName('video')[0];
+            var currentVideo = currentSlide.slideBackgroundContentElement.getElementsByTagName("video")[0];
             if (currentVideo) {
               /* Toggle video controls on/off */
               currentVideo.controls = !currentVideo.controls
@@ -991,7 +982,7 @@ In a suite of generic async algorithms that are expected to be callable from hot
           },
           32: () => { /* Keycode for spacebar */
             var currentSlide = Reveal.getCurrentSlide();
-            var currentVideo = currentSlide.getElementsByTagName('video')[0];
+            var currentVideo = currentSlide.slideBackgroundContentElement.getElementsByTagName("video")[0];
             if (currentVideo) {
               /* Pause/resume video when the spacebar is pressed */
               if (currentVideo.paused == true) currentVideo.play();
@@ -1034,6 +1025,10 @@ In a suite of generic async algorithms that are expected to be callable from hot
 
       Reveal.addEventListener('hideControls', function() {
         Reveal.configure({controls: false});
+        menu_button = document.getElementsByClassName("slide-menu-button")[0];
+        if (menu_button) {
+          menu_button.style.display = 'none';
+        }
       }, false );
 
       Reveal.addEventListener('slidechanged', function() {
@@ -1042,7 +1037,7 @@ In a suite of generic async algorithms that are expected to be callable from hot
          */
         slide_id = Reveal.getCurrentSlide().getAttribute("id");
 
-        if (slide_id !== "Title-Slide") {
+        if (slide_id !== "Title-Slide" && slide_id !== "video") {
           config = Reveal.getConfig();
           if (config["controls"] !== true) {
             Reveal.configure({controls: true});
@@ -1052,12 +1047,16 @@ In a suite of generic async algorithms that are expected to be callable from hot
           if (!menu.isMenuInitialised()) {
             menu.initialiseMenu();
           }
+          menu_button = document.getElementsByClassName("slide-menu-button")[0];
+          if (menu_button) {
+            menu_button.style.display = '';
+          }
         }
       }, false );
 
       Reveal.addEventListener('increasePlaybackSpeed', function() {
         var currentSlide = Reveal.getCurrentSlide();
-        var currentVideo = currentSlide.getElementsByTagName('video')[0];
+        var currentVideo = currentSlide.slideBackgroundContentElement.getElementsByTagName("video")[0];
         if (currentVideo) {
           currentVideo.playbackRate = 2.0;
         }
