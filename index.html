@@ -876,21 +876,69 @@ co_await async_write(..., use_awaitable);
         </section>
       </section>
 
+      <section>
+
+        <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
+          <h1>Coroutines Applied</h1>
+        </section>
+
+        <section>
+          <h2>Observations</h2>
+          <ul>
+            <span class="fragment" style="color:yellow"><li>C++20 coroutines are powerful<span class="fragment" style="color:yellow"> ... but complex</span></li></span>
+            <span class="fragment"><li>At the application level, how do we:</li></span>
+            <ul>
+              <span class="fragment"><li>Compare different forms of asynchrony</li></span>
+              <span class="fragment"><li>Evaluate/benchmark performance</li></span>
+              <span class="fragment"><li>Understand what's going on at the hardware level</li></span>
+            </ul>
+            <span class="fragment"><li>What is a practical methodology for doing this?</li></span>
+          </ul>
+          <aside class="notes">
+          </aside>
+        </section>
+
+        <section>
+          <h2><a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost.Beast</a></h2>
+          <ul>
+            <span class="fragment"><li>HTTP and WebSocket built on <a href="https://www.boost.org/doc/libs/1_81_0/doc/html/boost_asio.html">Boost.Asio</a></li></span>
+            <span class="fragment"><li>Excellent web server examples:</li></span>
+            <ul>
+              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/async/http_server_async.cpp">Asynchronous</a> (callback based)</li></span>
+              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/coro/http_server_coro.cpp">Stackful coroutines</a> (<a href="">Boost.Coroutine</a>)</li></span>
+              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/coro/http_server_coro.cpp">C++20 coroutines</a> (awaitables)</li></span>
+            </ul>
+            <span class="fragment"><li>Recode for simplicity and test with <a href="https://httpd.apache.org/docs/2.4/programs/ab.html">Apache Bench</a></li></span>
+          </ul>
+          <aside class="notes">
+            Yes. There's definitely still a use case for coroutine2. With c++20 coroutines, the only way to suspend a compound operation is if all parts are themselves coroutines. Specifically, if f calls a(), which calls b() which calls c() which calls d(), they must all be coroutine aware. They can't just "call" the next function, they must co_await it.
+
+By contrast, with coroutine2 this isn't the case. a, b, c don't need to know that they're running in a coroutine at all. If d suspends by reading from a pull_type or writing to a push_type, the entire call sack suspends up to the nearest enclosing coroutine.
+
+This has real advantages. For instance, by implementing an appropriate streambuf, I can use istream/ostream to lazily read/write anything. The higher level classes that implement operator<</operator>> are just regular code, as is the implementation of istream/osream. Yet when we need to fetch/flush more bytes the entire call stack can suspend.
+
+On the other hand, if you don't need to suspend entire stacks of operations, or if all your code can be changed to be language coroutine aware, then the stackless coroutines of c++20 are a better tool than boost.coroutine2 was.
+
+https://www.reddit.com/r/cpp/comments/10fkyru/are_boostcoroutine2_coroutines_still_relevant_now/
+          </aside>
+        </section>
+
+
         <!--
+          Slide plan:
 
-          Empirical study
+          Intro to Apache Bench
+          Asyncrhonous code
+          Stackful Coro's code
+          Awaitable Coro's code
+          Build/Run instructions
 
-          How do we study Coroutines Empirically?
+          Apache bench Results
 
-          Coroutine example - Boost.beast
-            Synchronous, Asycnhronous, Boost.Coroutine2 and awaitables
-            apache bench
-
-          Give data
-
-            perf
-
+          Debugging tips (could be a concluion slide)
         -->
+
+      </section>
 
       <section>
 
