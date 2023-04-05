@@ -1462,7 +1462,47 @@ int main(int argc, char* argv[])
 
         <!-- Build/Run instructions -->
 
-        <!-- Results -->
+        <section data-menu-title="Performance: x86-64">
+          <h3>Web Server Performance Comparison: x86-64</h3>
+          <canvas data-chart="bar">
+          <!--
+          {
+            "data" : {
+              "labels" : ["1", "10", "100", "250", "500", "1000"],
+              "datasets" : [
+              {
+                "label": "Asynchronous",
+                "data": [2867.19, 9407.40, 10577.73, 10558.98, 6870.57, 6904.21]
+              }, {
+                "label": "Boost.Coroutine",
+                "data": [3154.04, 10670.68, 11149.29, 6893.41, 6700.10, 6921.70]
+              }, {
+                "label": "C++20 Coroutines",
+                "data": [4054.45, 9228.29, 9942.40, 11647.31, 12484.03, 11732.35]
+              }]
+            },
+            "options" : {
+              "legend":
+              {
+                "labels": {"boxWidth":10}
+              },
+              "scales":
+              {
+                "yAxes": [
+                {
+                  "ticks": {"beginAtZero":true},
+                  "scaleLabel": {"display": true, "labelString": "Requests Per Second"}
+                }],
+                "xAxes": [
+                {
+                  "scaleLabel": {"display": true, "labelString": "Number of Simultaneous Connections (100000 requests)"}
+                }]
+              }
+            }
+          }
+          -->
+          </canvas>
+        </section>
 
       </section>
 
