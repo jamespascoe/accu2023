@@ -1,0 +1,58 @@
+Command Run-Through for Beast Example Video
+
+1920x1056
+
+git clone https://github.com/jamespascoe/accu2023-example-code.git
+
+mkdir accu2023-build
+cd accu2023-build
+
+CXX=g++-12.2 CC=gcc-12.2 cmake ../accu2023-example-code/beast_example
+
+make -j
+
+<new tab>
+
+~/accu2023-build/async_http_server 0.0.0.0 8081 4
+
+<new tab>
+
+~/accu2023-build/coro_http_server 0.0.0.0 8082 4
+
+<new tab>
+
+~/accu2023-build/await_http_server 0.0.0.0 8083 4
+
+<chrome>
+
+http://192.168.1.252:8081
+
+<new tab>
+
+http://192.168.1.252:8082
+ 
+<new tab>
+
+http://192.168.1.252:8083
+
+
+
+
+
+
+todo:
+
+sort out a card for DM
+stand between CE and AK to shield him a bit
+onboarding materials for James Sloan:
+ - materials for whiteboard
+ - diagram in weekly report
+
+ - map to CI and build systems
+ - Laptop for James
+
+ - backlog grooming
+ - Mini-mesh 
+
+
+
