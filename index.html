@@ -74,6 +74,8 @@
             </ul>
             <span class="fragment"><li><a href="http://wg21.link/p2502">P2502:</a> std::generator</li></span>
           </ul>
+          <aside class="notes">
+          </aside>
         </section>
 
         <section>
@@ -87,6 +89,8 @@
               <span class="fragment"><ul><li><code>sudo luarocks install luasocket</code></li></ul></span>
               <span class="fragment"><li>Tested on Linux Mint 19 and Mac OS X (<font size="6">Mojave</font>, <font size="6">Big Sur</font>)</li></span>
             </ul>
+          <aside class="notes">
+          </aside>
         </section>
 
       <section>
@@ -187,7 +191,6 @@
               <span class="fragment" style="color:yellow"><li><a href="https://en.wikipedia.org/wiki/Green_thread">Green Threads</a>: scheduled by a runtime library / VM</li></span>
             </ul>
             <aside class="notes">
-
             Green Threads are threads that are scheduled by a runtime library or a virtual machine (so not an OS thread). The name actually
             comes from the early days of Java - it was a co-operative threading model in Java 1.1, that was abandoned in 1.3 (back in the days
             of the JDK 1.x for anyone that remembers it).
@@ -1506,6 +1509,47 @@ int main(int argc, char* argv[])
           </canvas>
         </section>
 
+        <section data-menu-title="Time Per Request: x86-64">
+          <h3>Time Per Request (ms): x86-64</h3>
+          <canvas data-chart="bar">
+          <!--
+          {
+            "data" : {
+              "labels" : ["1", "10", "100", "250", "500", "1000"],
+              "datasets" : [
+              {
+                "label": "Asynchronous",
+                "data": [0.349, 0.106, 0.095, 0.095, 0.146, 0.114]
+              }, {
+                "label": "Boost.Coroutine",
+                "data": [0.317, 0.094, 0.090, 0.145, 0.149, 0.280]
+              }, {
+                "label": "C++20 Coroutines",
+                "data": [0.247, 0.108, 0.101, 0.086, 0.112, 0.147]
+              }]
+            },
+            "options" : {
+              "legend":
+              {
+                "labels": {"boxWidth":10}
+              },
+              "scales":
+              {
+                "yAxes": [
+                {
+                  "ticks": {"beginAtZero":true},
+                  "scaleLabel": {"display": true, "labelString": "Mean Time Per Request (ms)"}
+                }],
+                "xAxes": [
+                {
+                  "scaleLabel": {"display": true, "labelString": "Number of Simultaneous Connections (100000 requests)"}
+                }]
+              }
+            }
+          }
+          -->
+          </canvas>
+        </section>
       </section>
 
       <section>
