@@ -67,12 +67,11 @@
             <span class="fragment"><li><a href="https://www.bluwireless.com/products/5g-tactical/">Mobile Wireless Networking</a> with Coroutines</li></span>
             <span class="fragment"><li>C++20 Example: Web Serving with <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost.Beast</a></li></span>
             <ul>
-              <span class="fragment"><li>Synchronous, Asynchronous</li></span>
-              <span class="fragment"><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/coroutine2/doc/html/coroutine2/overview.html">Boost.Coroutine</a>, 
+              <span class="fragment"><li>Asynchronous, <a href="https://www.boost.org/doc/libs/1_81_0/libs/coroutine2/doc/html/coroutine2/overview.html">Boost.Coroutine</a>, 
                   <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/example/http/server/awaitable/http_server_awaitable.cpp">Awaitables</a></li></span>
               <span class="fragment"><li>Empirical analysis with <a href="https://httpd.apache.org/docs/2.4/programs/ab.html">Apache bench</a> (ab)</li></span>
             </ul>
-            <span class="fragment"><li><a href="http://wg21.link/p2502">P2502:</a> std::generator</li></span>
+            <span class="fragment"><li><a href="http://wg21.link/p2502">std::generator</a>, <a href="http://wg21.link/p2300">std::execution</a> and <a href="https://github.com/facebookexperimental/libunifex">libunifex</a></li></span>
           </ul>
           <aside class="notes">
           </aside>
@@ -82,11 +81,10 @@
           <h2><a href="https://github.com/jamespascoe/accu2023-example-code.git">Example Code: Tools & Build</a></h2>
             <ul>
               <span class="fragment"><li>C++ examples all compile with <a href="https://gcc.gnu.org/gcc-12/changes.html">GCC 12.2</a>:</li></span>
-              <span class="fragment"><ul><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost Beast 1.81.0</a></li></ul></span>
-              <span class="fragment"><li>Lua examples run with <a href="https://www.lua.org/download.html">Lua 5.4.4</a>:</li></span>
-              <span class="fragment"><ul><li>Requires <code>luaposix</code> and <code>luasocket</code></li></ul></span>
-              <span class="fragment"><ul><li><code>sudo luarocks install luaposix</code></li></ul></span>
-              <span class="fragment"><ul><li><code>sudo luarocks install luasocket</code></li></ul></span>
+              <span class="fragment"><ul><li><a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost 1.81.0</a></li></span>
+              <span class="fragment"><li><a href="https://www.swig.org/">SWIG 4.0.2</a></li></span>
+              <span class="fragment"><li><a href="https://www.cmake.org/">CMake 3.25.2</a></li></ul></span>
+              <span class="fragment"><li>Lua examples run with <a href="https://www.lua.org/download.html">Lua 5.4.4</a></li></span>
               <span class="fragment"><li>Tested on Linux Mint 19 and Mac OS X (<font size="6">Mojave</font>, <font size="6">Big Sur</font>)</li></span>
             </ul>
           <aside class="notes">
@@ -165,7 +163,7 @@
               <span class="fragment"><li>Overhead is high:</li></span>
               <ul>
                 <span class="fragment"><li>VM tables, program code, heap, stack, fds, signals</li></span>
-                <span class="fragment"><li>Sharing data, syncrhonisation and scaling are hard</li></span>
+                <span class="fragment"><li>Sharing data, synchronisation and scaling are hard</li></span>
               </ul>
             </ul>
             <aside class="notes">
@@ -214,7 +212,7 @@
       <section>
 
         <section data-background-video="media/BWT_Intermission.mp4" data-background-video-loop=true>
-          <h1>Coroutines Applied</h1>
+          <h1>Coroutines in the Field</h1>
         </section>
 
         <section>
