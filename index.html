@@ -167,10 +167,10 @@
               </ul>
             </ul>
             <aside class="notes">
-            Event-driven applications are charactersied by two things, background processing tasks and lots of one-off requests that have
+            Event-driven applications are characterised by two things, background processing tasks and lots of one-off requests that have
             to be serviced. If you think about networking and GUIs, this is especially true.
 
-            Key point: if a process blocks after 5% of its timeslice, then the whole thing is context-switched, despite the possibility
+            Key point: if a process blocks after 5% of its time-slice, then the whole thing is context-switched, despite the possibility
             that useful work can be done in other parts of the process.
             </aside>
         </section>
@@ -278,7 +278,7 @@
           This example is designed to be fairly powerful. Simple Lua behaviour (that's easy to grasp), but the
           architecture on which it sits is powerful. C++ to Lua bindings via Swig, multi-level logging using
           spdlog, network comms via Boost.Asio with a CMake build flow. So, the idea is that the example is
-          staightforward to grasp but then you can clone it, take it forward and use it in your own work.
+          straightforward to grasp but then you can clone it, take it forward and use it in your own work.
           </aside>
         </section>
 
@@ -1603,9 +1603,9 @@ int main(int argc, char* argv[])
               <span class="fragment"><ul><li>Targeting C++26 (see also: <a href="https://github.com/facebookexperimental/libunifex">libunifex</a>)</li></ul></span>
             </ul>
             <aside class="notes">
-The coroutine language feature mitigates these shortcomings somewhat with the HALO optimization Halo: coroutine Heap Allocation eLision Optimization: the joint response, which leverages existing compiler optimizations such as allocation elision and devirtualization to inline the coroutine, completely eliminating the runtime overhead. However, HALO requires a sophisiticated compiler, and a fair number of stars need to align for the optimization to kick in. In our experience, more often than not in real-world code today’s compilers are not able to inline the coroutine, resulting in allocations and indirections in the generated code.
+The coroutine language feature mitigates these shortcomings somewhat with the HALO optimization Halo: coroutine Heap Allocation eLision Optimization: the joint response, which leverages existing compiler optimizations such as allocation elision and devirtualization to inline the coroutine, completely eliminating the runtime overhead. However, HALO requires a sophisticated compiler, and a fair number of stars need to align for the optimization to kick in. In our experience, more often than not in real-world code today’s compilers are not able to inline the coroutine, resulting in allocations and indirections in the generated code.
 
-In a suite of generic async algorithms that are expected to be callable from hot code paths, the extra allocations and indirections are a deal-breaker. It is for these reasons that we consider coroutines a poor choise for a basis of all standard async.
+In a suite of generic async algorithms that are expected to be callable from hot code paths, the extra allocations and indirections are a deal-breaker. It is for these reasons that we consider coroutines a poor choice for a basis of all standard async.
             </aside>
         </section>
 
