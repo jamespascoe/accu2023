@@ -103,11 +103,13 @@
               <ul>
                 <span class="fragment"><li>multiple items of work are 'in progress'</li></span>
                 <span class="fragment"><li>e.g. processes, threads or coroutines</li></span>
+                <span class="fragment"><li>harnessing windows of latency</li></span>
               </ul><br>
               <span class="fragment" style="color:yellow"><li>Parallelism exists when:</li></span>
               <ul>
                 <span class="fragment"><li>multiple items of work execute simultaneously</li></span>
                 <span class="fragment"><li>e.g. threads running on separate CPU cores</li></span>
+                <span class="fragment"><li>execution occurs at the same instant in time</li></span>
               </ul>
             </ul>
             <aside class="notes">
@@ -118,10 +120,7 @@
             generally requires some form of hardware. So, for example, my MAC is a quad core Intel i7 that's based on the Haswell
             architecture. So this means it can run four threads, in parallel, at the same instant. If we go one level deeper we can
             see that the Haswell microarchitecture is a dual-threaded, out-of-order microprocessor that is capable of decoding 5
-            instructions, issuing 4 fused uops (micro operations) and dispatching 8 uops on each cycle (and its clocked at 4GHz)..
-
-            Concurrency allows us to harness latency.
-            </aside>
+            instructions, issuing 4 fused uops (micro operations) and dispatching 8 uops on each cycle (and its clocked at 4GHz).
             </aside>
         </section>
 
@@ -134,7 +133,7 @@
         </section>
 
         <section>
-          <h2><a href="https://www.boost.org/doc/libs/1_81_0/libs/fiber/doc/html/fiber/overview.html">Taxonomy</a></h2>
+          <h2><a href="https://www.boost.org/doc/libs/1_81_0/libs/fiber/doc/html/fiber/overview.html">Concurrency Hierarchy</a></h2>
             <ol>
               <span class="fragment"><li>Multiple processes run on a single computer</li></span>
               <span class="fragment"><li>Multiple threads run within a single process</li></span>
@@ -143,11 +142,10 @@
             <p>
             <span class="fragment" style="color:yellow">Concurrency allows us to harness latency</span>
             <aside class="notes">
-            A note of caution with the terms 'Coroutine', 'Fibers' and 'Green Threads'. They are sometimes used inter-changeably and
-            there are differences. My personal view is that fibers can be implemented using coroutines (this is exactly what Lua
-            does and Boost.Fiber is built on Boost.Coroutine), but they are not equivalent. For example, coroutines that are generators
-            are clearly not fibers. Coroutines provide enhanced control flow semantics, whereas, fibers give you a co-operatively scheduled
-            light-weight threading model (that resembles OS threads).
+            A note of clarification with the terms 'Coroutine' and 'Fibers'. They are sometimes used inter-changeably and
+            there are differences. Fibers give you a co-operatively scheduled light-weight threading model, which resembles OS threads.
+            You can implement fibers with coroutines (which is exactly what Lua and Boost.Fiber do), but coroutines themselves give you
+            more, for example, the capability to implement generators.
             </aside>
         </section>
 
@@ -288,7 +286,7 @@
 
         <section>
           <h2><a href="https://github.com/jamespascoe/accu2023-example-code/blob/master/lua_fiber/behaviours/lua_fiber.lua">Lua Behavior</a></h2>
-          <pre class="stretch"><code class="lua" data-trim data-line-numbers="|110-138|15-43|45-73|75-108|">
+          <pre class="stretch"><code class="lua" data-trim data-line-numbers="|102-130|15-43|45-73|68-100|">
 --[[
 
  lua_fiber.lua - provides a simple example of fibers.
@@ -477,7 +475,7 @@ private:
   // that this is based on the ASIO Asychronous TCP server tutorial.
   class tcp_connection {
   public:
-    using pointer = std::shared_ptr&lttcp_connection$gt;
+    using pointer = std::shared_ptr&lttcp_connection&gt;
 
     static pointer create(asio::io_context& io_context) {
       return pointer(new tcp_connection(io_context));
