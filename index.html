@@ -156,7 +156,7 @@
         </section>
 
         <section>
-          <h2><a href="https://www.boost.org/doc/libs/1_81_0/libs/fiber/doc/html/fiber/overview.html">Concurrency Hierarchy</a></h2>
+          <h2><a href="https://www.boost.org/doc/libs/1_81_0/libs/fiber/doc/html/fiber/overview.html">Concurrency Granularity</a></h2>
             <ol>
               <span class="fragment"><li>Multiple processes run on a single computer</li></span>
               <span class="fragment"><li>Multiple threads run within a single process</li></span>
@@ -208,7 +208,7 @@
                 <span class="fragment"><li>... stack, program counter, signal table</li></span>
               </ul>
               <span class="fragment"><li>C++03: OS, C++11: std::thread, C++20: std::jthread</li></span>
-              <span class="fragment" style="color:yellow"><li><a href="https://en.wikipedia.org/wiki/Reentrancy_(computing)">Reentrancy</a>: multiple invocations can run concurrently</li></span>
+              <span class="fragment" style="color:yellow"><li><a href="https://en.wikipedia.org/wiki/Reentrancy_(computing)">Reentrancy</a>: multiple invocations run concurrently</li></span>
               <span class="fragment" style="color:yellow"><li><a href="https://en.wikipedia.org/wiki/Green_thread">Thread safety</a>: the avoidance of race conditions</li></span>
               <span class="fragment" style="color:yellow"><li><a href="https://en.wikipedia.org/wiki/Green_thread">Green Threads</a>: scheduled by a runtime library / VM</li></span>
             </ul>
@@ -325,10 +325,12 @@
 
         <section>
           <h2><a href="https://github.com/jamespascoe/accu2023-example-code/blob/master/lua_fiber/behaviours/lua_fiber.lua">Lua Behavior</a></h2>
-          <pre class="stretch"><code class="lua" data-trim data-line-numbers="|102-130|15-43|45-73|68-100|">
+          <pre class="stretch"><code class="lua" data-trim data-line-numbers="|108-136|9-37|39-67|70-106|">
 --[[
 
- lua_fiber.lua - provides a simple example of fibers.
+ lua_fiber.lua
+
+ This behaviour provides an example of networked fibers.
 
 ]]
 
@@ -398,19 +400,23 @@ function dispatcher (coroutines)
   local timer = Actions.Timer()
 
   while true do
-    if next(coroutines) == nil then break end -- all done
+    if next(coroutines) == nil then break end
 
     for name, co in pairs(coroutines) do
       local status, res = coroutine.resume(co)
 
-      if res then -- coroutine has exited
+      if res then -- coroutine has finished
 
         if type(res) == "string" then  -- runtime error
-          Actions.Log.critical("Lua coroutine '" .. tostring(name)
-                               .. "' exited with error " .. res)
+          Actions.Log.critical(
+            "Lua coroutine '" .. tostring(name) ..
+            "' has exited with runtime error " .. res
+          )
         else
-          Actions.Log.warn("Lua coroutine '" .. tostring(name) ..
-                           "' has exited")
+          Actions.Log.warn(
+            "Lua coroutine '" .. tostring(name) ..
+            "' exited"
+          )
         end
 
         coroutines[name] = nil
@@ -419,9 +425,9 @@ function dispatcher (coroutines)
       end
     end
 
-    -- Run the dispatcher every 1 ms. Note, that a blocking
-    -- timer is required to prevent lua_mesh from consuming
-    -- 100% of a core.
+    -- Run the dispatcher every 1 ms. Note, that a blocking timer
+    -- is required to prevent lua_mesh from consuming 100% of
+    -- a core.
     timer(Actions.Timer.WaitType_BLOCK, 1, "ms", 3)
 
   end
@@ -429,15 +435,15 @@ end
 
 local function main(args)
 
-  print("Welcome to Lua Mesh !")
+  print("Welcome to Lua Fiber !")
 
   if (not args or not args["port"]) then
-    print("Usage: lua_mesh lua_mesh.lua -a port=&ltlisten port&gt")
+    print("Usage: lua_fiber lua_fiber.lua -a port=<listen>")
     os.exit(1)
   end
 
   print(
-    string.format("Starting LuaMesh:\n" ..
+    string.format("Starting Lua Fiber:\n" ..
                   "  listen port: %d\n", tonumber(args["port"]))
   )
 
@@ -882,6 +888,7 @@ co_await async_write(..., use_awaitable);
           </ul>
         </section>
 
+        <!--
         <section>
           <h2><a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Customising Co_Await</a></h2>
           <ul>
@@ -894,6 +901,7 @@ co_await async_write(..., use_awaitable);
             <span class="fragment"><li>See Lewis Baker's excellent <a href="https://lewissbaker.github.io/2018/09/05/understanding-the-promise-type">Blog Post</a> for details</li></span>
           </ul>
         </section>
+        -->
 
         <section>
           <h2><a href="https://en.cppreference.com/w/cpp/coroutine/coroutine_handle">Coroutine Handles</a></h2>
@@ -908,6 +916,112 @@ co_await async_write(..., use_awaitable);
             Bit like a C pointer
           </aside>
         </section>
+
+        <section>
+          <h2><a href="https://github.com/jamespascoe/accu2022-example-code/tree/master/generator">Generator Example</a></h2>
+          <pre class="stretch"><code class="c++" data-trim data-line-numbers="|75-80|59-73|60-69|71-72|13|14-15|17-38|20-22|24-25|27-30|34-37|40-56|">
+//
+// card_dealer.cpp
+// ---------------
+//
+
+#include &ltcoroutine&gt
+#include &ltarray&gt
+#include &ltrandom&gt
+#include &ltstring&gt
+
+#include &ltiostream&gt
+
+template &lttypename T&gt struct generator {
+  struct promise_type;
+  using coroutine_handle = std::coroutine_handle&ltpromise_type&gt;
+
+  struct promise_type {
+    T current_value;
+
+    auto get_return_object() {
+      return generator{coroutine_handle::from_promise(*this)};
+    }
+
+    // Start 'lazily' i.e. suspend ('eagerly' == 'suspend_never').
+    auto initial_suspend() { return std::suspend_always{}; }
+
+    // Opportunity to publish results, signal completion etc.
+    // Suspend so that destroy() is called via RAII from outside
+    // the coroutine.
+    auto final_suspend() noexcept { return std::suspend_always{}; }
+
+    void unhandled_exception() { std::terminate(); }
+
+    auto yield_value(T const &value) {
+      current_value = value;
+      return std::suspend_always{};
+    }
+  };
+
+  bool next() {
+    return coroutine ? (coroutine.resume(), !coroutine.done())
+                     : false;
+  }
+
+  T value() const { return coroutine.promise().current_value; }
+
+  // Range support, class design etc.
+
+  ~generator() {
+    if (coroutine)
+      coroutine.destroy();
+  }
+
+private:
+  generator(coroutine_handle h) : coroutine(h) {}
+  coroutine_handle coroutine;
+};
+
+generator&ltstd::string&gt card_dealer(int deck_size) {
+  std::default_random_engine rng;
+  std::uniform_int_distribution&ltint&gt card(0, 12);
+  std::uniform_int_distribution&ltint&gt suit(0, 3);
+
+  std::array&ltstd::string, 13&gt cards = {
+      "Ace", "2", "3", "4", "5", "6", "7",
+      "8", "9", "10", "Jack", "Queen", "King"};
+
+  std::array&ltstd::string, 4&gt suits = {"Clubs", "Diamonds",
+                                      "Spades", "Hearts"};
+
+  for (int i = 0; i &lt deck_size; i++)
+    co_yield(cards[card(rng)] + " of " + suits[suit(rng)]);
+}
+
+int main() {
+  generator&ltstd::string&gt dealer = card_dealer(100);
+
+  while (dealer.next())
+    std::cout &lt&lt dealer.value() &lt&lt std::endl;
+}
+        </code></pre>
+        <aside class="notes">
+        So, I thought we have a brief break from networking examples and here is a fun generator - i.e. a virtual card dealer.
+        <p>
+        The generator return type is entirely generic. So 'generator' may be defined in a library like CppCoro, whereas
+        'card_dealer' is a specific coroutine use case. And then the main code is the application.
+        <p>
+        When a coroutine starts executing, it does the following:
+        <ul>
+          <li>it allocates the coroutine frame using operator new</li>
+          <li>copies the coroutine's parameters to the frame</li>
+          <li>constructs the promise object</li>
+          <li>calls get_return_object and keeps the result in a local variable. This is what gets returned to the caller
+            when the coroutine first suspends.</li>
+          <li>calls initial_suspend in the promise type and co_awaits the result.</li>
+          <li>when that gets resumed, the body of the coroutine starts</li>
+        </ul>
+        </aside>
+      </section>
+
+
+
       </section>
 
       <section>
@@ -945,24 +1059,6 @@ co_await async_write(..., use_awaitable);
             <span class="fragment"><li>Recode for simplicity and test with <a href="https://httpd.apache.org/docs/2.4/programs/ab.html">Apache Bench</a></li></span>
           </ul>
           <aside class="notes">
-          Yes. There's definitely still a use case for coroutine2. With c++20 coroutines, the only way to suspend a
-          compound operation is if all parts are themselves coroutines. Specifically, if f calls a(), which calls b()
-          which calls c() which calls d(), they must all be coroutine aware. They can't just "call" the next function,
-          they must co_await it.
-
-          By contrast, with coroutine2 this isn't the case. a, b, c don't need to know that they're running in a 
-          coroutine at all. If d suspends by reading from a pull_type or writing to a push_type, the entire call 
-          stack suspends up to the nearest enclosing coroutine.
-
-          This has real advantages. For instance, by implementing an appropriate streambuf, I can use istream/ostream
-          to lazily read/write anything. The higher level classes that implement operator<</operator>> are just regular
-          code, as is the implementation of istream/osream. Yet when we need to fetch/flush more bytes the entire call
-          stack can suspend.
-
-          On the other hand, if you don't need to suspend entire stacks of operations, or if all your code can be changed
-          to be language coroutine aware, then the stackless coroutines of c++20 are a better tool than boost.coroutine2 was.
-
-          See: https://www.reddit.com/r/cpp/comments/10fkyru/are_boostcoroutine2_coroutines_still_relevant_now/
           </aside>
         </section>
 
@@ -980,7 +1076,7 @@ co_await async_write(..., use_awaitable);
 
         <section>
           <h2><a href="">HTTP Server: Asynchronous</a></h2>
-            <pre class="stretch"><code class="c++" style="width:105%" data-trim data-line-numbers="">
+            <pre class="stretch"><code class="c++" style="width:105%" data-trim data-line-numbers="|168-199|190-193|107-166|107|147-152|21-104|">
 #include &ltboost/beast/core.hpp&gt
 #include &ltboost/beast/http.hpp&gt
 #include &ltboost/asio/strand.hpp&gt
@@ -1007,87 +1103,83 @@ class session : public std::enable_shared_from_this&ltsession&gt
   beast::flat_buffer buffer_;
   http::request&lthttp::string_body&gt req_;
 
-  public:
+public:
   // Take ownership of the stream
   session(
       tcp::socket&& socket)
     : stream_(std::move(socket))
-  {
-  }
+  { }
 
   // Start the asynchronous operation
-  void
-    run()
-    {
-      asio::dispatch(stream_.get_executor(),
-          beast::bind_front_handler(
-            &session::do_read,
-            shared_from_this()));
-    }
+  void run()
+  {
+    asio::dispatch(stream_.get_executor(),
+        beast::bind_front_handler(
+          &session::do_read,
+          shared_from_this()));
+  }
 
-  void
-    do_read()
-    {
-      // Make the request empty before reading,
-      // otherwise the operation behavior is undefined.
-      req_ = {};
+  void do_read()
+  {
+    // Make the request empty before reading,
+    // otherwise the operation behavior is undefined.
+    req_ = {};
 
-      // Set the timeout.
-      stream_.expires_after(std::chrono::seconds(30));
+    // Set the timeout.
+    stream_.expires_after(std::chrono::seconds(30));
 
-      // Read a request
-      http::async_read(stream_, buffer_, req_,
-          beast::bind_front_handler(
-            &session::on_read,
-            shared_from_this()));
-    }
+    // Read a request
+    http::async_read(stream_, buffer_, req_,
+        beast::bind_front_handler(
+          &session::on_read,
+          shared_from_this()));
+  }
 
-  void
-    on_read(
-        beast::error_code ec,
-        std::size_t bytes_transferred)
-    {
-      boost::ignore_unused(bytes_transferred);
+  void on_read(
+    beast::error_code ec,
+    std::size_t bytes_transferred)
+  {
+    boost::ignore_unused(bytes_transferred);
 
-      // This means they closed the connection
-      if(ec == http::error::end_of_stream) {
-        stream_.socket().shutdown(tcp::socket::shutdown_send, ec);
-        return;
-      }
-
-      if(ec) return error(ec, "read");
-
-      // Send the response
-      auto handle_request = [this]() -&gt http::message_generator {
-        http::response&lthttp::string_body&gt res{
-          http::status::ok, req_.version()};
-        res.set(http::field::server, "Boost.Beast");
-        res.body() = "Hello ACCU 2023 from the Asynchronous Server!";
-        res.prepare_payload();
-        res.keep_alive(req_.keep_alive());
-        return res;
-      };
-
-      beast::async_write(
-          stream_,
-          handle_request(),
-          beast::bind_front_handler(
-            &session::on_write, shared_from_this()));
-    }
-
-  void
-    on_write(
-        beast::error_code ec,
-        std::size_t bytes_transferred)
-    {
-      boost::ignore_unused(bytes_transferred);
-
-      if(ec) return error(ec, "write");
-
+    // This means they closed the connection
+    if(ec == http::error::end_of_stream) {
       stream_.socket().shutdown(tcp::socket::shutdown_send, ec);
-      // Read another request
-      do_read();
+      return;
     }
+
+    if(ec) return error(ec, "read");
+
+    // Send the response
+    auto handle_request = [this]() -&gt http::message_generator {
+      http::response&lthttp::string_body&gt res{
+        http::status::ok, req_.version()};
+      res.set(http::field::server, "Boost.Beast");
+      res.body() = "Hello ACCU 2023 from the Asynchronous Server!";
+      res.prepare_payload();
+      res.keep_alive(req_.keep_alive());
+      return res;
+    };
+
+    beast::async_write(
+        stream_,
+        handle_request(),
+        beast::bind_front_handler(
+          &session::on_write, shared_from_this()));
+  }
+
+  void on_write(
+    beast::error_code ec,
+    std::size_t bytes_transferred)
+  {
+    boost::ignore_unused(bytes_transferred);
+
+    if(ec) return error(ec, "write");
+
+    stream_.socket().shutdown(tcp::socket::shutdown_send, ec);
+
+    // Read another request
+    do_read();
+  }
 };
 
 // Accepts incoming connections and launches the sessions
@@ -1096,7 +1188,7 @@ class listener : public std::enable_shared_from_this&ltlistener&gt
   asio::io_context& ioc_;
   tcp::acceptor acceptor_;
 
-  public:
+public:
   listener(
       asio::io_context& ioc,
       tcp::endpoint endpoint)
@@ -1118,8 +1210,7 @@ class listener : public std::enable_shared_from_this&ltlistener&gt
     if(ec) error(ec, "bind");
 
     // Start listening for connections
-    acceptor_.listen(
-        asio::socket_base::max_listen_connections, ec);
+    acceptor_.listen(asio::socket_base::max_listen_connections, ec);
     if(ec) error(ec, "listen");
   }
 
@@ -1129,30 +1220,28 @@ class listener : public std::enable_shared_from_this&ltlistener&gt
     do_accept();
   }
 
-  private:
-  void
-    do_accept()
-    {
-      // The new connection gets its own strand
-      acceptor_.async_accept(
-          asio::make_strand(ioc_),
-          beast::bind_front_handler(
-            &listener::on_accept,
-            shared_from_this()));
-    }
+private:
+  void do_accept()
+  {
+    // The new connection gets its own strand
+    acceptor_.async_accept(
+        asio::make_strand(ioc_),
+        beast::bind_front_handler(
+          &listener::on_accept,
+          shared_from_this()));
+  }
 
-  void
-    on_accept(beast::error_code ec, tcp::socket socket)
-    {
-      if(ec) error(ec, "accept");
+  void on_accept(beast::error_code ec, tcp::socket socket)
+  {
+    if(ec) error(ec, "accept");
 
-      // Create the session and run it
-      std::make_shared&ltsession&gt(
-          std::move(socket))-&gtrun();
+    // Create the session and run it
+    std::make_shared&ltsession&gt(
+        std::move(socket))-&gtrun();
 
-      // Accept another connection
-      do_accept();
-    };
+    // Accept another connection
+    do_accept();
+  };
 };
 
 int main(int argc, char *argv[])
@@ -1188,23 +1277,28 @@ int main(int argc, char *argv[])
   return EXIT_SUCCESS;
 }
             </code></pre>
-          <aside class="notes">
-          </aside>
-        </section>
+           <aside class="notes">
+           One common idiom is to managing object lifetime is to have the I/O object be managed by a single class
+           that inherits from enable_shared_from_this. When a class inherits from enable_shared_from_this, it
+           provides a shared_from_this() member function that returns a valid shared_ptr instance managing this.
+           A copy of the shared_ptr is passed to completion handlers, which causes the lifetime of the I/O object
+           to be extended to at least as long as the handler. See the Boost.Asio asynchronous TCP daytime server
+           tutorial for an example using this approach.
+           <p>
+           I also want to mention strands. So, strands are an Asio mechanism for ensuring that event handlers
+           are invoked in a strict sequence, so they allow you to execute code in a multithreaded program without
+           the need for explicit locking. Boost.Asio has some excellent documentation and examples on strands.
+           </aside>
+          </section>
 
         <section data-menu-title="HTTP Server: Stackful">
           <h2><a href="">HTTP Server: Stackful Coroutines</a></h2>
-            <pre class="stretch"><code class="c++" style="width:105%" data-trim data-line-numbers="">
+            <pre class="stretch"><code class="c++" style="width:105%" data-trim data-line-numbers="|107-141|67-105|21-64|">
 #include &ltboost/beast/core.hpp&gt
 #include &ltboost/beast/http.hpp&gt
-#include &ltboost/beast/version.hpp&gt
-#include &ltboost/asio/dispatch.hpp&gt
-#include &ltboost/asio/strand.hpp&gt
 #include &ltboost/asio/spawn.hpp&gt
-#include &ltboost/config.hpp&gt
 
 #include &ltiostream&gt
-#include &ltmemory&gt
 #include &ltthread&gt
 #include &ltvector&gt
 #include &ltformat&gt
@@ -1220,10 +1314,9 @@ void error(beast::error_code ec, char const* msg)
   std::cerr &lt&lt std::format("Error: {} - {}\n", msg, ec.message());
 }
 
-  void
-do_session(
-    beast::tcp_stream& stream,
-    asio::yield_context yield)
+void do_session(
+  beast::tcp_stream& stream,
+  asio::yield_context yield)
 {
   beast::flat_buffer buffer;
   beast::error_code ec;
@@ -1268,9 +1361,9 @@ do_session(
 
 // Accepts incoming connections and launches the sessions
 void do_listen(
-    asio::io_context& ioc,
-    tcp::endpoint endpoint,
-    asio::yield_context yield)
+  asio::io_context& ioc,
+  tcp::endpoint endpoint,
+  asio::yield_context yield)
 {
   beast::error_code ec;
 
@@ -1344,12 +1437,46 @@ int main(int argc, char *argv[])
 }
             </code></pre>
           <aside class="notes">
+          Stackful coroutines mean that each coroutine has its own stack. By contrast, C++20
+          coroutines are stackless - they suspend execution by returning to the caller and
+          the data that is required to resume execution is stored in a callable on the heap
+          (so separately from the stack).
+          <p>
+          Its probably fair to to say that the world has moved towards stackless coroutines,
+          (primarily for scalability), but, there are use cases where stackful coroutines are
+          useful. So, for example with C++20 coroutines, the only way that you can suspend a
+          compound operation (e.g. if a coroutine f() calls a() which calls b() which calls c()) is
+          if all of the intermediary functions are coroutines aware (because you have to co_await
+          each stage). Whereas with Boost.coroutine2 (for example) then the intermediary functions
+          don't need to know that they are running in a coroutine at all - the entire call stack
+          suspends up to the nearest coroutine.
+
+          <!--
+          Yes. There's definitely still a use case for coroutine2. With c++20 coroutines, the only way to suspend a
+          compound operation is if all parts are themselves coroutines. Specifically, if f calls a(), which calls b()
+          which calls c() which calls d(), they must all be coroutine aware. They can't just "call" the next function,
+          they must co_await it.
+
+          By contrast, with coroutine2 this isn't the case. a, b, c don't need to know that they're running in a 
+          coroutine at all. If d suspends by reading from a pull_type or writing to a push_type, the entire call 
+          stack suspends up to the nearest enclosing coroutine.
+
+          This has real advantages. For instance, by implementing an appropriate streambuf, I can use istream/ostream
+          to lazily read/write anything. The higher level classes that implement operator<</operator>> are just regular
+          code, as is the implementation of istream/osream. Yet when we need to fetch/flush more bytes the entire call
+          stack can suspend.
+
+          On the other hand, if you don't need to suspend entire stacks of operations, or if all your code can be changed
+          to be language coroutine aware, then the stackless coroutines of c++20 are a better tool than boost.coroutine2 was.
+
+          See: https://www.reddit.com/r/cpp/comments/10fkyru/are_boostcoroutine2_coroutines_still_relevant_now/
+          -->
           </aside>
         </section>
 
         <section data-menu-title="HTTP Server: Awaitables">
           <h2><a href="">HTTP Server: C++20 Coroutines</a></h2>
-            <pre class="stretch"><code class="c++" style="width:105%" data-trim data-line-numbers="">
+            <pre class="stretch"><code class="c++" style="width:105%" data-trim data-line-numbers="|106-150|72-104|22-69|17-19|">
 #include &ltboost/beast/core.hpp&gt
 #include &ltboost/beast/http.hpp&gt
 #include &ltboost/asio/awaitable.hpp&gt
@@ -1502,6 +1629,8 @@ int main(int argc, char* argv[])
 }
             </code></pre>
           <aside class="notes">
+          This line rebinds the executor to use the Asio version that supports awaitables.
+          Have a look at the Boost.Beast example for more details.
           </aside>
         </section>
 
@@ -1631,7 +1760,7 @@ int main(int argc, char* argv[])
             <ul>
               <span class="fragment"><li>C++23 <a href="https://en.cppreference.com/w/cpp/header/stacktrace">stacktrace</a> can be very helpful:</li></span>
               <ul>
-                <span class="fragment"><li>Good support in gcc 12.2</li></span>
+                <span class="fragment"><li>Good support in GCC 12.2</li></span>
                 <span class="fragment"><li>Configure with: <span style="color:yellow">--enable-libstdcxx-backtrace=yes</span></li></span>
                 <span class="fragment"><li>Compile with: <span style="color:yellow">-std=c++23 -lstdc++_libbacktrace</span></li></span>
               </ul>
@@ -1672,10 +1801,10 @@ int main(int argc, char* argv[])
         <section>
           <h2>Conclusion</h2>
             <ul>
-              <span class="fragment"><li>Fibers provide a light-weight alternative to threading</li></span>
-              <span class="fragment"><ul><li>Combines concurrency with parallelism</li></ul></span>
               <span class="fragment"><li>Coroutines allow asynchronous code to be written</li></span>
               <span class="fragment"><ul><li>With the readability of synchronous code</li></ul></span>
+              <span class="fragment"><ul><li>Fibers: a light-weight alternative to threading</li></ul></span>
+              <span class="fragment"><ul><li>Empirical insights are compelling</li></ul></span>
               <span class="fragment"><li>Using coroutines in user-code:</li></span>
               <span class="fragment"><ul><li><a href="https://www.boost.org/doc/libs/1_81_0/doc/html/boost_asio.html">Boost.Asio</a> and <a href="https://www.boost.org/doc/libs/1_81_0/libs/beast/doc/html/index.html">Boost.Beast</a> are great for this</li></ul></span>
               <span class="fragment"><ul><li>Persevere with <a href="#/key-references">key references</a></li></ul></span>
